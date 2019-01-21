@@ -1,3 +1,9 @@
+/*
+ * dict.c - Corgi DB
+ * 
+ * Copyright (C) 2019, Chen Su <ghosind@gmail.com>. All right reserved.
+ */
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -24,7 +30,7 @@ Dict *dict_init() {
   return dict;
 }
 
-void dict_expand(Dict *dict, const unsigned int size) {
+void dict_resize(Dict *dict, const unsigned int size) {
   DictNode **new_table;
   int used = dict->used;
 
@@ -84,7 +90,7 @@ int dict_set(Dict *dict, const char *key, const char *value) {
   }
 
   if (dict->used == dict->size) {
-    dict_expand(dict, dict->size * 2);
+    dict_resize(dict, dict->size * 2);
   }
 
   int hash_key = dict->hash_function(key);

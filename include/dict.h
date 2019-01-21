@@ -21,7 +21,7 @@ typedef struct {
 Dict *dict_init();
 void dict_reset(Dict *dict);
 
-void dict_expand(Dict *dict, const unsigned int size);
+void dict_resize(Dict *dict, const unsigned int size);
 DictNode *dict_find(Dict *dict, const char *key);
 
 char *dict_get(Dict *dict, const char *key);
