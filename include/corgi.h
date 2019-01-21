@@ -16,3 +16,4 @@ CorgiDB *init();
 // corgidb commands
 int set(const CorgiDB *db, const char *key, const char *value);
 char *get(const CorgiDB *db, const char *key);
+int del(const CorgiDB *db, const char *key);

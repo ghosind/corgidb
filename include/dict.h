@@ -26,3 +26,4 @@ DictNode *dict_find(Dict *dict, const char *key);
 
 char *dict_get(Dict *dict, const char *key);
 int dict_set(Dict *dict, const char *key, const char *value);
+int dict_delete(Dict *dict, const char *key);

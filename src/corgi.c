@@ -33,3 +33,7 @@ int set(const CorgiDB *db, const char *key, const char *value) {
 char *get(const CorgiDB *db, const char *key) {
   return dict_get(db->dict, key);
 }
+
+int del(const CorgiDB *db, const char *key) {
+  return dict_delete(db->dict, key);
+}
