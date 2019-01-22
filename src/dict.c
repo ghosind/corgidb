@@ -36,8 +36,10 @@ void dict_resize(Dict *dict, const unsigned int size) {
 
   new_table = (DictNode **) malloc(sizeof(DictNode) * size);
   if (!new_table) {
-    db_error(1, "");
+    db_error(1, "Faled to resize dictionary.");
   }
+
+  memset(new_table, 0, sizeof(DictNode) * size);
 
   for (int i = 0; i < dict->size && used > 0; i++) {
     DictNode *node = dict->table[i];
@@ -100,6 +102,36 @@ int dict_set(Dict *dict, const char *key, const char *value) {
   new_node->value = value;
   new_node->next = dict->table[hash_key];
   dict->table[hash_key] = new_node;
+
+  return 0;
+}
+
+int dict_delete(Dict *dict, const char *key) {
+  int hash_key = dict->hash_function(key) % dict->mask;
+  DictNode *node, *prev_node;
+  
+  prev_node = node = dict->table[hash_key];
+
+  while (node) {
+    if (strcmp(node->key, key)) {
+      break;
+    }
+
+    prev_node = node;
+    node = node->next;
+  }
+
+  if (node == NULL) {
+    return 1;
+  }
+
+  if (prev_node == node) {
+    dict->table[hash_key] = node->next;
+  } else {
+    prev_node->next = node->next;
+  }
+
+  free(node);
 
   return 0;
 }
