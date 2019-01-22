@@ -6,6 +6,9 @@
 
 #include <dict.h>
 
+#ifndef _CORGI_H_
+#define _CORGI_H_
+
 typedef struct CorgiDB {
   Dict *dict;
 } CorgiDB;
@@ -17,3 +20,5 @@ CorgiDB *init();
 int set(const CorgiDB *db, const char *key, const char *value);
 char *get(const CorgiDB *db, const char *key);
 int del(const CorgiDB *db, const char *key);
+
+#endif
