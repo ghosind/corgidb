@@ -7,13 +7,13 @@
 #ifndef _DICT_H_
 #define _DICT_H_
 
-typedef struct {
+typedef struct DictNode {
   char *key;
   char *value;
-  DictNode *next;
+  struct DictNode *next;
 } DictNode;
 
-typedef struct {
+typedef struct Dict {
   int size;
   int mask;
   int used;

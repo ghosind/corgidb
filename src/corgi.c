@@ -6,6 +6,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <corgi.h>
 #include <error.h>
@@ -30,8 +31,14 @@ int set(const CorgiDB *db, const char *key, const char *value) {
   return dict_set(db->dict, key, value);
 }
 
-char *get(const CorgiDB *db, const char *key) {
-  return dict_get(db->dict, key);
+char *get(const CorgiDB *db, const char *key, char *buf) {
+  char *result = dict_get(db->dict, key);
+
+  if (!result) {
+    return NULL;
+  }
+
+  return strcpy(buf, result); 
 }
 
 int del(const CorgiDB *db, const char *key) {

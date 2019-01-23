@@ -9,6 +9,7 @@
 
 #include <dict.h>
 #include <error.h>
+#include <hash.h>
 
 void dict_reset(Dict* dict) {
   if (!dict) {
@@ -20,6 +21,7 @@ void dict_reset(Dict* dict) {
   dict->mask = 0;
   dict->used = 0;
   dict->table = NULL;
+  dict->hash_function = accumulation; // using accumulation in test phase.
 }
 
 Dict *dict_init() {
@@ -81,11 +83,15 @@ int dict_resize(Dict *dict, const int size) {
 }
 
 DictNode *dict_find(Dict *dict, const char *key) {
+  if (dict->size == 0) {
+    return NULL;
+  }
+
   int hash_key = dict->hash_function(key) % dict->mask;
   DictNode *node = dict->table[hash_key];
 
   while (node) {
-    if (strcmp(node->key, key)) {
+    if (!strcmp(node->key, key)) {
       break;
     }
 
@@ -103,7 +109,7 @@ char *dict_get(Dict *dict, const char *key) {
 
   DictNode *node = dict_find(dict, key);
 
-  return node ? node->key : NULL;
+  return node ? node->value : NULL;
 }
 
 int dict_set(Dict *dict, const char *key, const char *value) {
@@ -112,22 +118,42 @@ int dict_set(Dict *dict, const char *key, const char *value) {
     return 1;
   }
 
+  char *value_buf = (char *) malloc(sizeof(char) * strlen(value));
+  if (!value_buf) {
+    db_error(1, "Failed to allocate memory for value string");
+    return 1;
+  }
+  
+  strcpy(value_buf, value);
+
   DictNode *node = dict_find(dict, key);
 
   if (node) {
-    node->value = value;
+    node->value = value_buf;
     return 0;
   }
 
   if (dict->used == dict->size) {
-    dict_resize(dict, dict->size * 2);
+    dict_resize(dict, dict->size > 0 ? dict->size * 2 : 100);
   }
 
-  int hash_key = dict->hash_function(key);
+  int hash_key = dict->hash_function(key) % dict->mask;
   DictNode *new_node = (DictNode *) malloc(sizeof(DictNode));
+  if (!new_node) {
+    db_error(1, "Failed to allocate memory for new node");
+    return 1;
+  }
 
-  new_node->key = key;
-  new_node->value = value;
+  char *key_buf = (char *) malloc(sizeof(char) * strlen(key));
+  if (!key_buf) {
+    db_error(1, "Failed to allocate memory for key string");
+    return 1;
+  }
+
+  strcpy(key_buf, key);
+
+  new_node->key = key_buf;
+  new_node->value = value_buf;
   new_node->next = dict->table[hash_key];
   dict->table[hash_key] = new_node;
 
@@ -137,16 +163,16 @@ int dict_set(Dict *dict, const char *key, const char *value) {
 int dict_delete(Dict *dict, const char *key) {
   if (!dict || !key) {
     db_error(1, "Dictionary and key cannot be empty");
-    return NULL;
+    return 1;
   }
-  
+
   int hash_key = dict->hash_function(key) % dict->mask;
   DictNode *node, *prev_node;
   
   prev_node = node = dict->table[hash_key];
 
   while (node) {
-    if (strcmp(node->key, key)) {
+    if (!strcmp(node->key, key)) {
       break;
     }
 
@@ -165,6 +191,8 @@ int dict_delete(Dict *dict, const char *key) {
     prev_node->next = node->next;
   }
 
+  free(node->key);
+  free(node->value);
   free(node);
 
   return 0;
