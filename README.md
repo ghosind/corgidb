@@ -15,14 +15,14 @@ int main(int argc, char **argv) {
   char *result;
   char buff[80];
 
-  db = init();
+  db = db_init();
   if (!db) {
     exit(1);
   }
 
-  set(db, "greeting", "hello, world");
+  db_set(db, "greeting", "hello, world");
 
-  result = get(db, "greeting", buff);
+  result = db_get(db, "greeting", buff);
   if (result) {
     printf("%s\n", result);
   }
@@ -35,16 +35,19 @@ int main(int argc, char **argv) {
 
 ```c
 // initialize database
-CorgiDB *init();
+CorgiDB *db_init();
 
 // set command
-int set(CorgiDB *db, const char *key, const char *value);
+int db_set(CorgiDB *db, const char *key, const char *value);
 
 // get command
-char *get(CorgiDB *db, const char *key, char *buf);
+char *db_get(CorgiDB *db, const char *key, char *buf);
 
 // delete command
-int del(CorgiDb *db, const char *key);
+int db_delete(CorgiDB *db, const char *key);
+
+// value length command
+int db_strlen(CorgiDB *db, const char *key);
 ```
 
 ## License

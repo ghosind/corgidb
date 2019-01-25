@@ -12,7 +12,7 @@
 #include <error.h>
 #include <dict.h>
 
-CorgiDB *init() {
+CorgiDB *db_init() {
   CorgiDB *db;
   
   db = (CorgiDB *) malloc(sizeof(CorgiDB));
@@ -27,11 +27,11 @@ CorgiDB *init() {
   return db;
 }
 
-int set(const CorgiDB *db, const char *key, const char *value) {
+int db_set(const CorgiDB *db, const char *key, const char *value) {
   return dict_set(db->dict, key, value);
 }
 
-char *get(const CorgiDB *db, const char *key, char *buf) {
+char *db_get(const CorgiDB *db, const char *key, char *buf) {
   char *result = dict_get(db->dict, key);
 
   if (!result) {
@@ -41,6 +41,16 @@ char *get(const CorgiDB *db, const char *key, char *buf) {
   return strcpy(buf, result); 
 }
 
-int del(const CorgiDB *db, const char *key) {
+int db_delete(const CorgiDB *db, const char *key) {
   return dict_delete(db->dict, key);
+}
+
+int db_strlen(const CorgiDB *db, const char *key) {
+  char *value = dict_get(db->dict, key);
+
+  if (!value) {
+    return -1;
+  }
+
+  return strlen(value);
 }

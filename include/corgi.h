@@ -14,11 +14,12 @@ typedef struct CorgiDB {
 } CorgiDB;
 
 // corgidb systems
-CorgiDB *init();
+CorgiDB *db_init();
 
 // corgidb commands
-int set(const CorgiDB *db, const char *key, const char *value);
-char *get(const CorgiDB *db, const char *key, char *buf);
-int del(const CorgiDB *db, const char *key);
+int db_set(const CorgiDB *db, const char *key, const char *value);
+char *db_get(const CorgiDB *db, const char *key, char *buf);
+int db_delete(const CorgiDB *db, const char *key);
+int db_strlen(const CorgiDB *db, const char *key);
 
 #endif

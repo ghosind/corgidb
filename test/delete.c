@@ -8,22 +8,22 @@ int main(int argc, char **argv) {
   char *result;
   char buff[80];
 
-  db = init();
+  db = db_init();
   if (!db) {
     exit(1);
   }
 
-  set(db, "key_1", "value_1");
-  set(db, "key_2", "value_2");
+  db_set(db, "key_1", "value_1");
+  db_set(db, "key_2", "value_2");
 
-  del(db, "key_1");
+  db_delete(db, "key_1");
 
-  result = get(db, "key_1", buff);
+  result = db_get(db, "key_1", buff);
   if (result) {
     printf("key_1: %s\n", result);
   }
 
-  result = get(db, "key_2", buff);
+  result = db_get(db, "key_2", buff);
   if (result) {
     printf("key_2: %s\n", result);
   }

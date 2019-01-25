@@ -8,14 +8,14 @@ int main(int argc, char **argv) {
   char *result;
   char buff[80];
 
-  db = init();
+  db = db_init();
   if (!db) {
     exit(1);
   }
 
-  set(db, "greeting", "hello, world");
+  db_set(db, "greeting", "hello, world");
 
-  result = get(db, "greeting", buff);
+  result = db_get(db, "greeting", buff);
   if (result) {
     printf("%s\n", result);
   }
