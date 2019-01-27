@@ -10,6 +10,7 @@
 #include <dict.h>
 #include <error.h>
 #include <hash.h>
+#include <memory.h>
 
 void dict_reset(Dict* dict) {
   if (!dict) {
@@ -27,9 +28,8 @@ void dict_reset(Dict* dict) {
 Dict *dict_init() {
   Dict* dict;
 
-  dict = (Dict *) malloc(sizeof(Dict));
+  dict = (Dict *) db_malloc(sizeof(Dict));
   if (!dict) {
-    db_error(1, "Failed to allocate memory for dictionary.");
     return NULL;
   }
 
@@ -52,9 +52,9 @@ int dict_resize(Dict *dict, const int size) {
   DictNode **new_table;
   int used = dict->used;
 
-  new_table = (DictNode **) malloc(sizeof(DictNode) * size);
+  new_table = (DictNode **) db_malloc(sizeof(DictNode) * size);
   if (!new_table) {
-    db_error(1, "Faled to resize dictionary.");
+    return ERR_MEM_ALLOC;
   }
 
   memset(new_table, 0, sizeof(DictNode) * size);
@@ -118,10 +118,9 @@ int dict_set(Dict *dict, const char *key, const char *value, const int ex, const
     return 1;
   }
 
-  char *value_buf = (char *) malloc(sizeof(char) * strlen(value));
+  char *value_buf = (char *) db_malloc(sizeof(char) * strlen(value));
   if (!value_buf) {
-    db_error(1, "Failed to allocate memory for value string");
-    return 1;
+    return ERR_MEM_ALLOC;
   }
   
   strcpy(value_buf, value);
@@ -146,16 +145,14 @@ int dict_set(Dict *dict, const char *key, const char *value, const int ex, const
   }
 
   int hash_key = dict->hash_function(key) % dict->mask;
-  DictNode *new_node = (DictNode *) malloc(sizeof(DictNode));
+  DictNode *new_node = (DictNode *) db_malloc(sizeof(DictNode));
   if (!new_node) {
-    db_error(1, "Failed to allocate memory for new node");
-    return 1;
+    return ERR_MEM_ALLOC;
   }
 
-  char *key_buf = (char *) malloc(sizeof(char) * strlen(key));
+  char *key_buf = (char *) db_malloc(sizeof(char) * strlen(key));
   if (!key_buf) {
-    db_error(1, "Failed to allocate memory for key string");
-    return 1;
+    return ERR_MEM_ALLOC;
   }
 
   strcpy(key_buf, key);
