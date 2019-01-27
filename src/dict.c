@@ -112,7 +112,7 @@ char *dict_get(Dict *dict, const char *key) {
   return node ? node->value : NULL;
 }
 
-int dict_set(Dict *dict, const char *key, const char *value) {
+int dict_set(Dict *dict, const char *key, const char *value, const int ex, const int nx) {
   if (!dict || !key || !value) {
     db_error(1, "Dictionary, key, and value cannot be empty");
     return 1;
@@ -129,8 +129,16 @@ int dict_set(Dict *dict, const char *key, const char *value) {
   DictNode *node = dict_find(dict, key);
 
   if (node) {
+    if (nx == 1) {
+      return 1;
+    }
+
     node->value = value_buf;
     return 0;
+  }
+
+  if (ex == 1) {
+    return 1;
   }
 
   if (dict->used == dict->size) {

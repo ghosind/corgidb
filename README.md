@@ -40,6 +40,12 @@ CorgiDB *db_init();
 // set command
 int db_set(CorgiDB *db, const char *key, const char *value);
 
+// set value if key was exists
+int db_set_ex(const CorgiDB *db, const char *key, const char *value);
+
+// set value if key was not exists
+int db_set_nx(const CorgiDB *db, const char *key, const char *value);
+
 // get command
 char *db_get(CorgiDB *db, const char *key, char *buf);
 

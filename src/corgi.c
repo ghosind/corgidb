@@ -28,7 +28,15 @@ CorgiDB *db_init() {
 }
 
 int db_set(const CorgiDB *db, const char *key, const char *value) {
-  return dict_set(db->dict, key, value);
+  return dict_set(db->dict, key, value, 0, 0);
+}
+
+int db_set_ex(const CorgiDB *db, const char *key, const char *value) {
+  return dict_set(db->dict, key, value, 1, 0);
+}
+
+int db_set_nx(const CorgiDB *db, const char *key, const char *value) {
+  return dict_set(db->dict, key, value, 0, 1);
 }
 
 char *db_get(const CorgiDB *db, const char *key, char *buf) {
