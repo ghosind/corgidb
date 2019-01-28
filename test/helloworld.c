@@ -4,11 +4,17 @@
 #include <corgi.h>
 
 int main(int argc, char **argv) {
+  CorgiDBConfig *config;
   CorgiDB *db;
   char *result;
   char buff[80];
 
-  db = db_init();
+  config = get_default_config();
+  if (!config) {
+    exit(1);
+  }
+
+  db = db_init(config);
   if (!db) {
     exit(1);
   }

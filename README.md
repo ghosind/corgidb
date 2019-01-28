@@ -1,6 +1,6 @@
 # corgidb
 
-A key-value database.
+Corgi DB is a key-value database. The project is under development.
 
 ## Getting Start
 
@@ -11,11 +11,17 @@ A key-value database.
 #include <corgi.h>
 
 int main(int argc, char **argv) {
+  CorgiDBConfig *config;
   CorgiDB *db;
   char *result;
   char buff[80];
 
-  db = db_init();
+  config = get_default_config();
+  if (!config) {
+    exit(1);
+  }
+
+  db = db_init(config);
   if (!db) {
     exit(1);
   }
@@ -34,8 +40,11 @@ int main(int argc, char **argv) {
 ## APIs
 
 ```c
+// get default configuration
+CorgiDBConfig *get_default_config();
+
 // initialize database
-CorgiDB *db_init();
+CorgiDB *db_init(CorgiDBConfig *config);
 
 // set command
 int db_set(CorgiDB *db, const char *key, const char *value);

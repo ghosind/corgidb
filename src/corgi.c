@@ -12,16 +12,15 @@
 #include <error.h>
 #include <dict.h>
 
-CorgiDB *db_init() {
+CorgiDB *db_init(CorgiDBConfig *config) {
   CorgiDB *db;
   
-  db = (CorgiDB *) malloc(sizeof(CorgiDB));
+  db = (CorgiDB *) db_malloc(sizeof(CorgiDB));
   if (!db) {
-    db_error(1, "failed to allocate memory for database");
-
     return NULL;
   }
 
+  db->config = config;
   db->dict = dict_init();
 
   return db;

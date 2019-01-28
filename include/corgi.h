@@ -4,6 +4,7 @@
  * Copyright (C) 2019, Chen Su <ghosind@gmail.com>. All right reserved.
  */
 
+#include <config.h>
 #include <dict.h>
 
 #ifndef _CORGI_H_
@@ -11,10 +12,11 @@
 
 typedef struct CorgiDB {
   Dict *dict;
+  CorgiDBConfig *config;
 } CorgiDB;
 
 // corgidb systems
-CorgiDB *db_init();
+CorgiDB *db_init(CorgiDBConfig *config);
 
 // corgidb commands
 int db_set(const CorgiDB *db, const char *key, const char *value);
