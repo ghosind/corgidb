@@ -21,6 +21,12 @@ typedef struct Dict {
   int (*hash_function)(const char *key);
 } Dict;
 
+enum DBSetFlag {
+  SetFlag_NONE = 0,
+  SetFlag_XX = 1,
+  SetFlag_NX = 2,
+};
+
 Dict *dict_init();
 void dict_reset(Dict *dict);
 
@@ -28,7 +34,7 @@ int dict_resize(Dict *dict, const int size);
 DictNode *dict_find(Dict *dict, const char *key);
 
 char *dict_get(Dict *dict, const char *key);
-int dict_set(Dict *dict, const char *key, const char *value, const int ex, const int nx);
+int dict_set(Dict *dict, const char *key, const char *value, const enum DBSetFlag flag);
 int dict_delete(Dict *dict, const char *key);
 
 #endif

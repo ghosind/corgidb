@@ -7,7 +7,7 @@
 #ifndef _ERROR_H_
 #define _ERROR_H_
 
-enum db_error_code {
+enum DBErrorCode {
   // memory error
   ERR_MEM_ALLOC = 0x0001,
   ERR_MEM_REALLOC = 0x0002,
@@ -16,7 +16,7 @@ enum db_error_code {
   ERR_SYS_PARAMS = 0x1001,
 };
 
-void db_error(const int error_code, const char *msg, ...);
-void db_fatal(const int error_code, const char *msg, ...);
+void db_error(const enum DBErrorCode error_code, const char *msg, ...);
+void db_fatal(const enum DBErrorCode error_code, const char *msg, ...);
 
 #endif
