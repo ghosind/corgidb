@@ -14,7 +14,7 @@
 
 void dict_reset(Dict* dict) {
   if (!dict) {
-    db_error(1, "Cannot initialize empty dictionary.");
+    db_error(ERR_SYS_PARAMS, "Cannot initialize empty dictionary.");
     return;
   }
 
@@ -40,7 +40,7 @@ Dict *dict_init() {
 
 int dict_resize(Dict *dict, const int size) {
   if (!dict) {
-    db_error(1, "Cannot resize empty dictionary.");
+    db_error(ERR_SYS_PARAMS, "Cannot resize empty dictionary.");
     return 1;
   }
 
@@ -103,7 +103,7 @@ DictNode *dict_find(Dict *dict, const char *key) {
 
 char *dict_get(Dict *dict, const char *key) {
   if (!dict || !key) {
-    db_error(1, "Dictionary and key cannot be empty");
+    db_error(ERR_SYS_PARAMS, "Dictionary and key cannot be empty");
     return NULL;
   }
 
@@ -114,7 +114,7 @@ char *dict_get(Dict *dict, const char *key) {
 
 int dict_set(Dict *dict, const char *key, const char *value, const int ex, const int nx) {
   if (!dict || !key || !value) {
-    db_error(1, "Dictionary, key, and value cannot be empty");
+    db_error(ERR_SYS_PARAMS, "Dictionary, key, and value cannot be empty");
     return 1;
   }
 
@@ -167,7 +167,7 @@ int dict_set(Dict *dict, const char *key, const char *value, const int ex, const
 
 int dict_delete(Dict *dict, const char *key) {
   if (!dict || !key) {
-    db_error(1, "Dictionary and key cannot be empty");
+    db_error(ERR_SYS_PARAMS, "Dictionary and key cannot be empty");
     return 1;
   }
 

@@ -10,13 +10,13 @@
 #define _CSTRING_H_
 
 typedef struct CString {
-  int length;
+  int size;
   int used;
   char *buffer;
 } CString;
 
 CString *cstr_create(const char *str);
 char *cstr_get(CString *node);
-int *cstr_set(CString *node, const char *str);
+int cstr_set(CString *node, const char *str);
 
 #endif

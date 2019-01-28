@@ -9,8 +9,11 @@
 
 enum db_error_code {
   // memory error
-  ERR_MEM_ALLOC = 0x01,
-  ERR_MEM_REALLOC = 0x02,
+  ERR_MEM_ALLOC = 0x0001,
+  ERR_MEM_REALLOC = 0x0002,
+
+  // system error
+  ERR_SYS_PARAMS = 0x1001,
 };
 
 void db_error(const int error_code, const char *msg, ...);

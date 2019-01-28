@@ -15,18 +15,16 @@
 CString *cstr_create(const char *str) {
   CString *str_node;
 
-  str_node = (CString *) malloc(sizeof(CString));
+  str_node = (CString *) db_malloc(sizeof(CString));
   if (!str_node) {
-    db_error(1, "Failed to allocated memory");
     return NULL;
   }
 
   // allocate length * 2 memory for buffer
   int length = strlen(str);
   // last byte for '\0'
-  char *buffer = (char *) malloc(sizeof(char) * (length * 2 + 1));
+  char *buffer = (char *) db_malloc(sizeof(char) * (length * 2 + 1));
   if (!buffer) {
-    db_error(1, "Failed to allocated memory");
     return NULL;
   }
 
@@ -34,6 +32,8 @@ CString *cstr_create(const char *str) {
   str_node->size = length * 2;
   str_node->used = length;
   str_node->buffer = buffer;
+
+  return str_node;
 }
 
 char *cstr_get(CString *node) {
