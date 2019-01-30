@@ -7,7 +7,6 @@ int main(int argc, char **argv) {
   CorgiDBConfig *config;
   CorgiDB *db;
   char *result;
-  char buff[80];
 
   config = get_default_config();
   if (!config) {
@@ -21,9 +20,11 @@ int main(int argc, char **argv) {
 
   db_set(db, "greeting", "hello, world", SetFlag_NONE);
 
-  result = db_get(db, "greeting", buff);
+  result = db_get(db, "greeting");
   if (result) {
     printf("%s\n", result);
+
+    free(result)
   }
 
   exit(0);

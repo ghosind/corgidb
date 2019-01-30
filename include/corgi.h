@@ -21,7 +21,7 @@ CorgiDB *db_init(CorgiDBConfig *config);
 // corgidb commands
 int db_set(const CorgiDB *db, const char *key, const char *value, const enum DBSetFlag flag);
 int db_set_nx(const CorgiDB *db, const char *key, const char *value);
-char *db_get(const CorgiDB *db, const char *key, char *buf);
+char *db_get(const CorgiDB *db, const char *key);
 int db_delete(const CorgiDB *db, const char *key);
 int db_strlen(const CorgiDB *db, const char *key);
 

@@ -7,7 +7,6 @@ int main(int argc, char **argv) {
   CorgiDBConfig *config;
   CorgiDB *db;
   char *result;
-  char buff[80];
 
   config = get_default_config();
   if (!config) {
@@ -24,14 +23,18 @@ int main(int argc, char **argv) {
 
   db_delete(db, "key_1");
 
-  result = db_get(db, "key_1", buff);
+  result = db_get(db, "key_1");
   if (result) {
     printf("key_1: %s\n", result);
+
+    free(result);
   }
 
-  result = db_get(db, "key_2", buff);
+  result = db_get(db, "key_2");
   if (result) {
     printf("key_2: %s\n", result);
+
+    free(result);
   }
 
   exit(0);

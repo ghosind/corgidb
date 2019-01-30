@@ -34,14 +34,17 @@ int db_set_nx(const CorgiDB *db, const char *key, const char *value) {
   return dict_set(db->dict, key, value, SetFlag_NX);
 }
 
-char *db_get(const CorgiDB *db, const char *key, char *buf) {
+char *db_get(const CorgiDB *db, const char *key) {
   char *result = dict_get(db->dict, key);
 
   if (!result) {
     return NULL;
   }
 
-  return strcpy(buf, result); 
+  int len = strlen(result);
+  char *buffer = (char *) malloc(sizeof(char) * (len + 1));
+
+  return strcpy(buffer, result); 
 }
 
 int db_delete(const CorgiDB *db, const char *key) {
