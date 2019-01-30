@@ -21,7 +21,7 @@ CorgiDB *db_init(CorgiDBConfig *config) {
   }
 
   db->config = config;
-  db->dict = dict_init();
+  db->dict = dict_init(config);
 
   return db;
 }

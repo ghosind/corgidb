@@ -7,6 +7,8 @@
 #ifndef _DICT_H_
 #define _DICT_H_
 
+#define get_hash(dict, key) (dict->hash_function(key) % dict->mask)
+
 typedef struct DictNode {
   char *key;
   char *value;
@@ -27,7 +29,7 @@ enum DBSetFlag {
   SetFlag_NX = 2,
 };
 
-Dict *dict_init();
+Dict *dict_init(CorgiDBConfig *config);
 void dict_reset(Dict *dict);
 
 int dict_resize(Dict *dict, const int size);

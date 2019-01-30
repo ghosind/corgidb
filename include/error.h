@@ -14,6 +14,9 @@ enum DBErrorCode {
 
   // system error
   ERR_SYS_PARAMS = 0x1001,
+
+  // dictionary error
+  ERR_UNKNOWN_HASH = 0x2001,
 };
 
 void db_error(const enum DBErrorCode error_code, const char *msg, ...);

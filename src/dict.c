@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <config.h>
 #include <dict.h>
 #include <error.h>
 #include <hash.h>
@@ -22,10 +23,9 @@ void dict_reset(Dict* dict) {
   dict->mask = 0;
   dict->used = 0;
   dict->table = NULL;
-  dict->hash_function = accumulation; // using accumulation in test phase.
 }
 
-Dict *dict_init() {
+Dict *dict_init(CorgiDBConfig *config) {
   Dict* dict;
 
   dict = (Dict *) db_malloc(sizeof(Dict));
@@ -34,6 +34,16 @@ Dict *dict_init() {
   }
 
   dict_reset(dict);
+
+  switch (config->hash_type) {
+    case Accumulation:
+      dict->hash_function = accumulation;
+      break;
+    default:
+      db_error(ERR_UNKNOWN_HASH, "Unknow hash type.");
+      free(dict);
+      return NULL;
+  }
 
   return dict;
 }
@@ -63,7 +73,7 @@ int dict_resize(Dict *dict, const int size) {
     DictNode *node = dict->table[i];
 
     while (node) {
-      int hash_key = dict->hash_function(node->key) % dict->mask;
+      int hash_key = get_hash(dict, node->key);
       DictNode *new = node;
       node = node->next;
 
@@ -87,7 +97,7 @@ DictNode *dict_find(Dict *dict, const char *key) {
     return NULL;
   }
 
-  int hash_key = dict->hash_function(key) % dict->mask;
+  int hash_key = get_hash(dict, key);
   DictNode *node = dict->table[hash_key];
 
   while (node) {
@@ -144,7 +154,7 @@ int dict_set(Dict *dict, const char *key, const char *value, const enum DBSetFla
     dict_resize(dict, dict->size > 0 ? dict->size * 2 : 100);
   }
 
-  int hash_key = dict->hash_function(key) % dict->mask;
+  int hash_key = get_hash(dict, key);
   DictNode *new_node = (DictNode *) db_malloc(sizeof(DictNode));
   if (!new_node) {
     return ERR_MEM_ALLOC;
@@ -171,7 +181,7 @@ int dict_delete(Dict *dict, const char *key) {
     return 1;
   }
 
-  int hash_key = dict->hash_function(key) % dict->mask;
+  int hash_key = get_hash(dict, key);
   DictNode *node, *prev_node;
   
   prev_node = node = dict->table[hash_key];
