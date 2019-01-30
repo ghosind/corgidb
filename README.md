@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  db_set(db, "greeting", "hello, world");
+  db_set(db, "greeting", "hello, world", SetFlag_NONE);
 
   result = db_get(db, "greeting", buff);
   if (result) {
@@ -47,7 +47,7 @@ CorgiDBConfig *get_default_config();
 CorgiDB *db_init(CorgiDBConfig *config);
 
 // set command
-int db_set(CorgiDB *db, const char *key, const char *value);
+int db_set(CorgiDB *db, const char *key, const char *value, const enum DBSetFlag flag);
 
 // set value if key was exists
 int db_set_ex(const CorgiDB *db, const char *key, const char *value);

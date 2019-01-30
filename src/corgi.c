@@ -26,12 +26,12 @@ CorgiDB *db_init(CorgiDBConfig *config) {
   return db;
 }
 
-int db_set(const CorgiDB *db, const char *key, const char *value) {
-  return dict_set(db->dict, key, value, SetFlag_NONE);
+int db_set(const CorgiDB *db, const char *key, const char *value, const enum DBSetFlag flag) {
+  return dict_set(db->dict, key, value, flag);
 }
 
 int db_set_nx(const CorgiDB *db, const char *key, const char *value) {
-  return dict_set(db->dict, key, value, SetFlag_XX);
+  return dict_set(db->dict, key, value, SetFlag_NX);
 }
 
 char *db_get(const CorgiDB *db, const char *key, char *buf) {

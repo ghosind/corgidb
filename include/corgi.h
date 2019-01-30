@@ -19,7 +19,7 @@ typedef struct CorgiDB {
 CorgiDB *db_init(CorgiDBConfig *config);
 
 // corgidb commands
-int db_set(const CorgiDB *db, const char *key, const char *value);
+int db_set(const CorgiDB *db, const char *key, const char *value, const enum DBSetFlag flag);
 int db_set_nx(const CorgiDB *db, const char *key, const char *value);
 char *db_get(const CorgiDB *db, const char *key, char *buf);
 int db_delete(const CorgiDB *db, const char *key);
