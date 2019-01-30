@@ -47,6 +47,30 @@ char *db_get(const CorgiDB *db, const char *key) {
   return strcpy(buffer, result); 
 }
 
+int db_mset(const CorgiDB *db, const char **kv_pairs, const int len, const enum DBSetFlag flag) {
+  for (int i = 0; i < len; i++) {
+    int result = dict_set(db->dict, kv_pairs[0], kv_pairs[1], flag);
+
+    if (result) {
+      return result;
+    }
+  }
+
+  return 0;
+}
+
+int db_mset_nx(const CorgiDB *db, const char *kv_pairs, const int len) {
+  for (int i = 0; i < len; i++) {
+    int result = dict_set(db->dict, kv_pairs[0], kv_pairs[1], SetFlag_NX);
+
+    if (result) {
+      return result;
+    }
+  }
+
+  return 0;
+}
+
 int db_delete(const CorgiDB *db, const char *key) {
   return dict_delete(db->dict, key);
 }
