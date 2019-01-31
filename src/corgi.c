@@ -11,6 +11,7 @@
 #include <corgi.h>
 #include <error.h>
 #include <dict.h>
+#include <memory.h>
 
 CorgiDB *db_init(CorgiDBConfig *config) {
   CorgiDB *db;
@@ -47,9 +48,9 @@ char *db_get(const CorgiDB *db, const char *key) {
   return strcpy(buffer, result); 
 }
 
-int db_mset(const CorgiDB *db, const char **kv_pairs, const int len, const enum DBSetFlag flag) {
+int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, const enum DBSetFlag flag) {
   for (int i = 0; i < len; i++) {
-    int result = dict_set(db->dict, kv_pairs[0], kv_pairs[1], flag);
+    int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], flag);
 
     if (result) {
       return result;
@@ -59,9 +60,9 @@ int db_mset(const CorgiDB *db, const char **kv_pairs, const int len, const enum 
   return 0;
 }
 
-int db_mset_nx(const CorgiDB *db, const char *kv_pairs, const int len) {
+int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len) {
   for (int i = 0; i < len; i++) {
-    int result = dict_set(db->dict, kv_pairs[0], kv_pairs[1], SetFlag_NX);
+    int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NX);
 
     if (result) {
       return result;

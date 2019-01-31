@@ -11,6 +11,7 @@
 
 #include <cstring.h>
 #include <error.h>
+#include <memory.h>
 
 CString *cstr_create(const char *str) {
   CString *str_node;
@@ -53,4 +54,16 @@ int cstr_set(CString *node, const char *str) {
   strcpy(node->buffer, str);
 
   return 0;
+}
+
+int cstr_is_equal(CString *node, const char *str) {
+  if (node->used != strlen(str)) {
+    return 0;
+  }
+
+  return !strcmp(node->buffer, str);
+}
+
+int cstr_cmp(CString *node, const char *str) {
+  return strcmp(node->buffer, str);
 }
