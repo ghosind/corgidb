@@ -14,6 +14,7 @@ enum DBErrorCode {
 
   // system error
   ERR_SYS_PARAMS = 0x1001,
+  ERR_DICT_SIZE = 0x1002,
 
   // dictionary error
   ERR_UNKNOWN_HASH = 0x2001,

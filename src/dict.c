@@ -51,12 +51,12 @@ Dict *dict_init(CorgiDBConfig *config) {
 int dict_resize(Dict *dict, const int size) {
   if (!dict) {
     db_error(ERR_SYS_PARAMS, "Cannot resize empty dictionary.");
-    return 1;
+    return ERR_SYS_PARAMS;
   }
 
   if (size <= 0) {
-    db_error(1, "Dictionary size cannot be 0.");
-    return 1;
+    db_error(ERR_DICT_SIZE, "Dictionary size cannot be 0.");
+    return ERR_DICT_SIZE;
   }
 
   DictNode **new_table;

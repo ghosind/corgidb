@@ -17,6 +17,7 @@ typedef struct CorgiDB {
 
 // corgidb systems
 CorgiDB *db_init(CorgiDBConfig *config);
+int db_resize(CorgiDB *db, const unsigned int size);
 
 // corgidb commands
 int db_set(const CorgiDB *db, const char *key, const char *value, const enum DBSetFlag flag);

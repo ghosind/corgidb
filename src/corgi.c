@@ -27,6 +27,10 @@ CorgiDB *db_init(CorgiDBConfig *config) {
   return db;
 }
 
+int db_resize(CorgiDB *db, const unsigned int size) {
+  return dict_resize(db->dict, size);
+}
+
 int db_set(const CorgiDB *db, const char *key, const char *value, const enum DBSetFlag flag) {
   return dict_set(db->dict, key, value, flag);
 }
