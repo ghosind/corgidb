@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
   if (result) {
     printf("%s\n", result);
 
-    free(result)
+    free(result);
   }
 
   exit(0);

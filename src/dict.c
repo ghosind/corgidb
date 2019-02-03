@@ -92,7 +92,7 @@ int dict_resize(Dict *dict, const int size) {
   return 0;
 }
 
-DictNode *dict_find(Dict *dict, const char *key) {
+DictNode *dict_find(Dict *dict, const char *key, DictNode *prev) {
   if (dict->size == 0) {
     return NULL;
   }
@@ -103,6 +103,10 @@ DictNode *dict_find(Dict *dict, const char *key) {
   while (node) {
     if (!strcmp(node->key, key)) {
       break;
+    }
+
+    if (prev != NULL) {
+      prev = node;
     }
 
     node = node->next;
@@ -117,7 +121,7 @@ char *dict_get(Dict *dict, const char *key) {
     return NULL;
   }
 
-  DictNode *node = dict_find(dict, key);
+  DictNode *node = dict_find(dict, key, NULL);
 
   return node ? node->value : NULL;
 }
@@ -135,7 +139,7 @@ int dict_set(Dict *dict, const char *key, const char *value, const enum DBSetFla
   
   strcpy(value_buf, value);
 
-  DictNode *node = dict_find(dict, key);
+  DictNode *node = dict_find(dict, key, NULL);
 
   if (node) {
     if (flag == SetFlag_NX) {
@@ -181,29 +185,22 @@ int dict_delete(Dict *dict, const char *key) {
     return 1;
   }
 
-  int hash_key = get_hash(dict, key);
-  DictNode *node, *prev_node;
+  DictNode *node, *prev;
   
-  prev_node = node = dict->table[hash_key];
-
-  while (node) {
-    if (!strcmp(node->key, key)) {
-      break;
-    }
-
-    prev_node = node;
-    node = node->next;
-  }
+  // get node and previous node.
+  node = dict_find(dict, key, prev);
 
   if (node == NULL) {
     // key is not exists.
     return 1;
   }
 
-  if (prev_node == node) {
+  int hash_key = get_hash(dict, key);
+  if (prev == NULL) {
+    // it is the first node of list.
     dict->table[hash_key] = node->next;
   } else {
-    prev_node->next = node->next;
+    prev->next = node->next;
   }
 
   free(node->key);
