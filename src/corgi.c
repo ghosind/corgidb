@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <corgi.h>
+#include <cstring.h>
 #include <error.h>
 #include <dict.h>
 #include <memory.h>
@@ -81,11 +82,11 @@ int db_delete(const CorgiDB *db, const char *key) {
 }
 
 int db_strlen(const CorgiDB *db, const char *key) {
-  char *value = dict_get(db->dict, key);
+  DictNode *node = dict_find(db->dict, key, NULL);
 
-  if (!value) {
+  if (!node) {
     return -1;
   }
 
-  return strlen(value);
+  return cstr_len(node);
 }

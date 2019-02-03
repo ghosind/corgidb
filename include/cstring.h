@@ -19,6 +19,7 @@ CString *cstr_create(const char *str);
 char *cstr_get(CString *node);
 int cstr_set(CString *node, const char *str);
 void cstr_free(CString *node);
+int cstr_len(CString *node);
 int cstr_is_equal(CString *node, const char *str);
 int cstr_cmp(CString *node, const char *str);
 

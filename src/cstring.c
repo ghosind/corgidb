@@ -47,11 +47,19 @@ int cstr_set(CString *node, const char *str) {
   }
 
   int length = strlen(str);
+
   if (length > node->size) {
-    return 1;
+    char *new_buffer = (char *) db_realloc(node->buffer, length + 1);
+    if (!new_buffer) {
+      return 1;
+    }
+
+    node->buffer = new_buffer;
+    node->size = length;
   }
 
   strcpy(node->buffer, str);
+  node->used = length;
 
   return 0;
 }
@@ -59,6 +67,10 @@ int cstr_set(CString *node, const char *str) {
 void cstr_free(CString *node) {
   free(node->buffer);
   free(node);
+}
+
+int cstr_len(CString *node) {
+  return node->used;
 }
 
 int cstr_is_equal(CString *node, const char *str) {
