@@ -4,14 +4,16 @@
  * Copyright (C) 2019, Chen Su <ghosind@gmail.com>. All right reserved.
  */
 
+#include <cstring.h>
+
 #ifndef _DICT_H_
 #define _DICT_H_
 
 #define get_hash(dict, key) (dict->hash_function(key) % dict->mask)
 
 typedef struct DictNode {
-  char *key;
-  char *value;
+  CString *key;
+  CString *value;
   struct DictNode *next;
 } DictNode;
 

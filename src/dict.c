@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include <config.h>
+#include <cstring.h>
 #include <dict.h>
 #include <error.h>
 #include <hash.h>
@@ -73,7 +74,7 @@ int dict_resize(Dict *dict, const int size) {
     DictNode *node = dict->table[i];
 
     while (node) {
-      int hash_key = get_hash(dict, node->key);
+      int hash_key = get_hash(dict, cstr_get(node->key));
       DictNode *new = node;
       node = node->next;
 
@@ -101,7 +102,7 @@ DictNode *dict_find(Dict *dict, const char *key, DictNode *prev) {
   DictNode *node = dict->table[hash_key];
 
   while (node) {
-    if (!strcmp(node->key, key)) {
+    if (cstr_is_equal(node->key, key)) {
       break;
     }
 
@@ -123,7 +124,7 @@ char *dict_get(Dict *dict, const char *key) {
 
   DictNode *node = dict_find(dict, key, NULL);
 
-  return node ? node->value : NULL;
+  return node ? cstr_get(node->value) : NULL;
 }
 
 int dict_set(Dict *dict, const char *key, const char *value, const enum DBSetFlag flag) {
@@ -132,13 +133,6 @@ int dict_set(Dict *dict, const char *key, const char *value, const enum DBSetFla
     return 1;
   }
 
-  char *value_buf = (char *) db_malloc(sizeof(char) * strlen(value));
-  if (!value_buf) {
-    return ERR_MEM_ALLOC;
-  }
-  
-  strcpy(value_buf, value);
-
   DictNode *node = dict_find(dict, key, NULL);
 
   if (node) {
@@ -146,7 +140,7 @@ int dict_set(Dict *dict, const char *key, const char *value, const enum DBSetFla
       return 1;
     }
 
-    node->value = value_buf;
+    cstr_set(node->value, value);
     return 0;
   }
 
@@ -164,15 +158,8 @@ int dict_set(Dict *dict, const char *key, const char *value, const enum DBSetFla
     return ERR_MEM_ALLOC;
   }
 
-  char *key_buf = (char *) db_malloc(sizeof(char) * strlen(key));
-  if (!key_buf) {
-    return ERR_MEM_ALLOC;
-  }
-
-  strcpy(key_buf, key);
-
-  new_node->key = key_buf;
-  new_node->value = value_buf;
+  new_node->key = cstr_create(key);
+  new_node->value = cstr_create(value);
   new_node->next = dict->table[hash_key];
   dict->table[hash_key] = new_node;
 
@@ -203,8 +190,8 @@ int dict_delete(Dict *dict, const char *key) {
     prev->next = node->next;
   }
 
-  free(node->key);
-  free(node->value);
+  cstr_free(node->key);
+  cstr_free(node->value);
   free(node);
 
   return 0;

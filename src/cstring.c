@@ -56,6 +56,11 @@ int cstr_set(CString *node, const char *str) {
   return 0;
 }
 
+void cstr_free(CString *node) {
+  free(node->buffer);
+  free(node);
+}
+
 int cstr_is_equal(CString *node, const char *str) {
   if (node->used != strlen(str)) {
     return 0;
