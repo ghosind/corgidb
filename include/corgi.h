@@ -27,5 +27,7 @@ int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, const enum
 int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len);
 int db_delete(const CorgiDB *db, const char *key);
 int db_strlen(const CorgiDB *db, const char *key);
+int db_exists(const CorgiDB *db, const char **keys, const int len);
+int db_append(const CorgiDB *db, const char *key, const char *value);
 
 #endif

@@ -88,5 +88,24 @@ int db_strlen(const CorgiDB *db, const char *key) {
     return -1;
   }
 
-  return cstr_len(node);
+  return cstr_len(node->value);
+}
+
+int db_exists(const CorgiDB *db, const char **keys, const int len) {
+  int result = 0;
+
+  for (int i = 0; i < len; i++) {
+    result += dict_find(db->dict, keys[i], NULL) ? 1 : 0;
+  }
+
+  return result;
+}
+
+int db_append(const CorgiDB *db, const char *key, const char *value) {
+  DictNode *node = dict_find(db->dict, key, NULL);
+  if (!node) {
+    return -1;
+  }
+
+  return cstr_append(node->value, value);
 }

@@ -84,3 +84,22 @@ int cstr_is_equal(CString *node, const char *str) {
 int cstr_cmp(CString *node, const char *str) {
   return strcmp(node->buffer, str);
 }
+
+int cstr_append(CString *node, const char *str) {
+  int length = strlen(str);
+
+  if (node->used + length > node->size) {
+    char *new_buffer = (char *) db_realloc(node->buffer, (node->used + length) * 2 + 1);
+    if (!new_buffer) {
+      return -1;
+    }
+
+    node->buffer = new_buffer;
+    node->size = (node->used + length) * 2;
+  }
+
+  node->buffer = strcat(node->buffer, str);
+  node->used = node->used + length;
+
+  return node->used;
+}

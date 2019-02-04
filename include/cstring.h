@@ -22,5 +22,6 @@ void cstr_free(CString *node);
 int cstr_len(CString *node);
 int cstr_is_equal(CString *node, const char *str);
 int cstr_cmp(CString *node, const char *str);
+int cstr_append(CString *node, const char *str);
 
 #endif
