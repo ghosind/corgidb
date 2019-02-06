@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
   CorgiDB *db;
   char *result;
 
-  config = get_default_config();
+  config = db_get_config();
   if (!config) {
     exit(1);
   }

@@ -22,6 +22,6 @@ typedef struct CorgiDBConfig {
   enum HashType hash_type;
 } CorgiDBConfig;
 
-CorgiDBConfig *get_default_config();
+CorgiDBConfig *db_get_config();
 
 #endif

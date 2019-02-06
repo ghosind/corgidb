@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
   char *result;
   char buff[80];
 
-  config = get_default_config();
+  config = db_get_config();
   if (!config) {
     exit(1);
   }
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 
 ```c
 // get default configuration
-CorgiDBConfig *get_default_config();
+CorgiDBConfig *db_get_config();
 
 // initialize database
 CorgiDB *db_init(CorgiDBConfig *config);
@@ -63,6 +63,12 @@ int db_delete(CorgiDB *db, const char *key);
 
 // value length command
 int db_strlen(CorgiDB *db, const char *key);
+
+// check keys is exists
+int db_exists(const CorgiDB *db, const char **keys, const int len);
+
+// append string to an exist key
+int db_append(const CorgiDB *db, const char *key, const char *value);
 ```
 
 ## License

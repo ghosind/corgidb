@@ -7,7 +7,7 @@
 #include <config.h>
 #include <memory.h>
 
-CorgiDBConfig *get_default_config() {
+CorgiDBConfig *db_get_config() {
   CorgiDBConfig *config;
 
   config = (CorgiDBConfig *) db_malloc(sizeof(CorgiDBConfig));
