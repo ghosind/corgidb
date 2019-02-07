@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  db_set(db, "greeting", "hello, world", SetFlag_NONE);
+  db_set(db, "greeting", "hello, world", SetFlag_NONE, 0);
 
   result = db_get(db, "greeting");
   if (result) {

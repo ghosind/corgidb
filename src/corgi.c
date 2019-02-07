@@ -32,12 +32,13 @@ int db_resize(CorgiDB *db, const unsigned int size) {
   return dict_resize(db->dict, size);
 }
 
-int db_set(const CorgiDB *db, const char *key, const char *value, const enum DBSetFlag flag) {
-  return dict_set(db->dict, key, value, flag);
+int db_set(const CorgiDB *db, const char *key, const char *value, 
+    const enum DBSetFlag flag, const long ttl) {
+  return dict_set(db->dict, key, value, flag, ttl);
 }
 
-int db_set_nx(const CorgiDB *db, const char *key, const char *value) {
-  return dict_set(db->dict, key, value, SetFlag_NX);
+int db_set_nx(const CorgiDB *db, const char *key, const char *value, const long ttl) {
+  return dict_set(db->dict, key, value, SetFlag_NX, ttl);
 }
 
 char *db_get(const CorgiDB *db, const char *key) {
@@ -53,9 +54,10 @@ char *db_get(const CorgiDB *db, const char *key) {
   return strcpy(buffer, result); 
 }
 
-int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, const enum DBSetFlag flag) {
+int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, 
+    const enum DBSetFlag flag, const long ttl) {
   for (int i = 0; i < len; i++) {
-    int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], flag);
+    int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], flag, ttl);
 
     if (result) {
       return result;
@@ -65,9 +67,9 @@ int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, const enum
   return 0;
 }
 
-int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len) {
+int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len, const long ttl) {
   for (int i = 0; i < len; i++) {
-    int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NX);
+    int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NX, ttl);
 
     if (result) {
       return result;

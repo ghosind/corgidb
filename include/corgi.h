@@ -20,11 +20,13 @@ CorgiDB *db_init(CorgiDBConfig *config);
 int db_resize(CorgiDB *db, const unsigned int size);
 
 // corgidb commands
-int db_set(const CorgiDB *db, const char *key, const char *value, const enum DBSetFlag flag);
-int db_set_nx(const CorgiDB *db, const char *key, const char *value);
+int db_set(const CorgiDB *db, const char *key, const char *value, 
+    const enum DBSetFlag flag, const long ttl);
+int db_set_nx(const CorgiDB *db, const char *key, const char *value, const long ttl);
 char *db_get(const CorgiDB *db, const char *key);
-int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, const enum DBSetFlag flag);
-int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len);
+int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, 
+    const enum DBSetFlag flag, const long ttl);
+int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len, const long ttl);
 int db_delete(const CorgiDB *db, const char *key);
 int db_strlen(const CorgiDB *db, const char *key);
 int db_exists(const CorgiDB *db, const char **keys, const int len);

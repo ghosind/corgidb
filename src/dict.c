@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <config.h>
 #include <cstring.h>
@@ -127,13 +128,15 @@ char *dict_get(Dict *dict, const char *key) {
   return node ? cstr_get(node->value) : NULL;
 }
 
-int dict_set(Dict *dict, const char *key, const char *value, const enum DBSetFlag flag) {
+int dict_set(Dict *dict, const char *key, const char *value, 
+    const enum DBSetFlag flag, const long ttl) {
   if (!dict || !key || !value) {
     db_error(ERR_SYS_PARAMS, "Dictionary, key, and value cannot be empty");
     return 1;
   }
 
   DictNode *node = dict_find(dict, key, NULL);
+  time_t now = time(NULL);
 
   if (node) {
     if (flag == SetFlag_NX) {
@@ -141,6 +144,11 @@ int dict_set(Dict *dict, const char *key, const char *value, const enum DBSetFla
     }
 
     cstr_set(node->value, value);
+
+    if (ttl > 0) {
+      node->expire = now + ttl;
+    }
+
     return 0;
   }
 
@@ -161,6 +169,14 @@ int dict_set(Dict *dict, const char *key, const char *value, const enum DBSetFla
   new_node->key = cstr_create(key);
   new_node->value = cstr_create(value);
   new_node->next = dict->table[hash_key];
+
+  // set expire time
+  if (ttl > 0) {
+    new_node->expire = now + ttl;
+  } else {
+    new_node->expire = 0;
+  }
+
   dict->table[hash_key] = new_node;
 
   return 0;

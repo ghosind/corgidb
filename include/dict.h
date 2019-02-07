@@ -4,6 +4,8 @@
  * Copyright (C) 2019, Chen Su <ghosind@gmail.com>. All right reserved.
  */
 
+#include <time.h>
+
 #include <cstring.h>
 
 #ifndef _DICT_H_
@@ -14,6 +16,7 @@
 typedef struct DictNode {
   CString *key;
   CString *value;
+  time_t expire;
   struct DictNode *next;
 } DictNode;
 
@@ -38,7 +41,8 @@ int dict_resize(Dict *dict, const int size);
 DictNode *dict_find(Dict *dict, const char *key, DictNode *prev);
 
 char *dict_get(Dict *dict, const char *key);
-int dict_set(Dict *dict, const char *key, const char *value, const enum DBSetFlag flag);
+int dict_set(Dict *dict, const char *key, const char *value, 
+    const enum DBSetFlag flag, const long ttl);
 int dict_delete(Dict *dict, const char *key);
 
 #endif
