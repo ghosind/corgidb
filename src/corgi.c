@@ -111,3 +111,40 @@ int db_append(const CorgiDB *db, const char *key, const char *value) {
 
   return cstr_append(node->value, value);
 }
+
+int db_ttl(const CorgiDB *db, const char *key) {
+  DictNode *node = dict_find(db->dict, key, NULL);
+  if (!node) {
+    return -1;
+  }
+
+  if (node->expire == 0) {
+    return -2;
+  }
+
+  return node->expire - time(NULL);
+}
+
+int db_expire(const CorgiDB *db, const char *key, const long ttl) {
+  if (ttl <= 0) {
+    return -2;
+  }
+
+  DictNode *node = dict_find(db->dict, key, NULL);
+  if (!node) {
+    return -1;
+  }
+
+  node->expire = time(NULL) + ttl;
+  return 0;
+}
+
+int db_persist(const CorgiDB *db, const char *key) {
+  DictNode *node = dict_find(db->dict, key, NULL);
+  if (!node) {
+    return -1;
+  }
+
+  node->expire = 0;
+  return 0;
+}

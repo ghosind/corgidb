@@ -100,18 +100,36 @@ DictNode *dict_find(Dict *dict, const char *key, DictNode *prev) {
   }
 
   int hash_key = get_hash(dict, key);
-  DictNode *node = dict->table[hash_key];
+  DictNode *node, *prev_node;
+  
+  node = dict->table[hash_key];
+  prev_node = NULL;
 
   while (node) {
     if (cstr_is_equal(node->key, key)) {
       break;
     }
 
-    if (prev != NULL) {
-      prev = node;
+    prev_node = node;
+    node = node->next;
+  }
+
+  if (prev != NULL) {
+    prev = node;
+  }
+
+  if (node->expire != 0 && node->expire < time(NULL)) {
+    if (!prev_node) {
+      dict->table[hash_key] = node->next;
+    } else {
+      prev_node->next = node->next;
     }
 
-    node = node->next;
+    cstr_free(node->value);
+    cstr_free(node->key);
+    free(node);
+
+    return NULL;
   }
 
   return node;

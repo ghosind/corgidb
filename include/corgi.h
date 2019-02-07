@@ -31,5 +31,8 @@ int db_delete(const CorgiDB *db, const char *key);
 int db_strlen(const CorgiDB *db, const char *key);
 int db_exists(const CorgiDB *db, const char **keys, const int len);
 int db_append(const CorgiDB *db, const char *key, const char *value);
+int db_ttl(const CorgiDB *db, const char *key);
+int db_expire(const CorgiDB *db, const char *key, const long ttl);
+int db_persist(const CorgiDB *db, const char *key);
 
 #endif
