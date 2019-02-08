@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include <cstring.h>
+#include <transaction.h>
 
 #ifndef _DICT_H_
 #define _DICT_H_
@@ -25,6 +26,7 @@ typedef struct Dict {
   int mask;
   int used;
   DictNode **table;
+  DictTransaction *transaction;
   int (*hash_function)(const char *key);
 } Dict;
 

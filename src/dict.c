@@ -25,6 +25,7 @@ void dict_reset(Dict* dict) {
   dict->mask = 0;
   dict->used = 0;
   dict->table = NULL;
+  dict->transaction = NULL;
 }
 
 Dict *dict_init(CorgiDBConfig *config) {
