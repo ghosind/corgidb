@@ -32,3 +32,14 @@ void* db_realloc(void* ptr, size_t size) {
 
   return memory;
 }
+
+void *db_memcpy(void *src, size_t size) {
+  void *mem = db_malloc(size);
+  if (!mem) {
+    return NULL;
+  }
+
+  memcpy(mem, src, size);
+
+  return mem;
+}

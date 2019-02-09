@@ -61,3 +61,26 @@ int trans_rollback(void *dict_p) {
   dict->transaction->began = 0;
   dict->transaction->changes = NULL;
 }
+
+int trans_add_change(void *dict_p, void *node_p) {
+  Dict *dict = (Dict *) dict_p;
+  DictNode *node = (DictNode *) node_p;
+
+  Change *change = (Change *) db_malloc(sizeof(Change));
+  if (!change) {
+    return 1;
+  }
+
+  char *value = (char *) db_memcpy(node->value, strlen(node->value));
+  if (!value) {
+    free(change);
+    return 1;
+  }
+
+  change->value = value;
+  change->node = node;
+  change->next = dict->transaction->changes;
+  dict->transaction->changes = change;
+
+  return 0;
+}

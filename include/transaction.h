@@ -23,5 +23,6 @@ typedef struct DictTransaction {
 int trans_begin(void *dict);
 int trans_commit(void *dict);
 int trans_rollback(void *dict);
+int trans_add_change(void *dict_p, void *node_p);
 
 #endif

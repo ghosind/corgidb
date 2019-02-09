@@ -13,5 +13,6 @@
 
 void *db_malloc(size_t size);
 void *db_realloc(void *ptr, size_t size);
+void *db_memcpy(void *src, size_t size)
 
 #endif
