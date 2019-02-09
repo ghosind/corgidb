@@ -34,5 +34,8 @@ int db_append(const CorgiDB *db, const char *key, const char *value);
 int db_ttl(const CorgiDB *db, const char *key);
 int db_expire(const CorgiDB *db, const char *key, const long ttl);
 int db_persist(const CorgiDB *db, const char *key);
+int db_begin(const CorgiDB *db);
+int db_commit(const CorgiDB *db);
+int db_rollback(const CorgiDB *db);
 
 #endif

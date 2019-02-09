@@ -56,26 +56,34 @@ char *db_get(const CorgiDB *db, const char *key) {
 
 int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, 
     const enum DBSetFlag flag, const long ttl) {
+  trans_begin(db->dict);
+
   for (int i = 0; i < len; i++) {
     int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], flag, ttl);
 
     if (result) {
+      trans_rollback(db->dict);
       return result;
     }
   }
 
+  trans_commit(db->dict);
   return 0;
 }
 
 int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len, const long ttl) {
+  trans_begin(db->dict);
+
   for (int i = 0; i < len; i++) {
     int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NX, ttl);
 
     if (result) {
+      trans_rollback(db->dict);
       return result;
     }
   }
 
+  trans_commit(db->dict);
   return 0;
 }
 
@@ -147,4 +155,16 @@ int db_persist(const CorgiDB *db, const char *key) {
 
   node->expire = 0;
   return 0;
+}
+
+int db_begin(const CorgiDB *db) {
+  return trans_begin(db->dict);
+}
+
+int db_commit(const CorgiDB *db) {
+  return trans_commit(db->dict);
+}
+
+int db_rollback(const CorgiDB *db) {
+  return trans_rollback(db->dict);
 }

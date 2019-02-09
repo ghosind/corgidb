@@ -185,6 +185,14 @@ int dict_set(Dict *dict, const char *key, const char *value,
     return ERR_MEM_ALLOC;
   }
 
+  if (dict->transaction && dict->transaction->began == 1) {
+    int trans_result = trans_add_change(dict, node);
+    if (trans_result) {
+      free(new_node);
+      return 1;
+    }
+  }
+
   new_node->key = cstr_create(key);
   new_node->value = cstr_create(value);
   new_node->next = dict->table[hash_key];
