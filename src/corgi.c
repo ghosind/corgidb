@@ -49,7 +49,10 @@ char *db_get(const CorgiDB *db, const char *key) {
   }
 
   int len = strlen(result);
-  char *buffer = (char *) malloc(sizeof(char) * (len + 1));
+  char *buffer = (char *) db_malloc(sizeof(char) * (len + 1));
+  if (!buffer) {
+    return NULL;
+  }
 
   return strcpy(buffer, result); 
 }
@@ -85,6 +88,41 @@ int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len, const l
 
   trans_commit(db->dict);
   return 0;
+}
+
+CorgiDBResult *db_mget(const CorgiDB *db, const **keys, const int len) {
+  CorgiDBResult *result = (CorgiDBResult *) db_malloc(sizeof(CorgiDBResult));
+  if (!result) {
+    return NULL;
+  }
+
+  char **buffers = (char **) db_malloc(sizeof(char *) * len);
+  if (!buffers) {
+    return NULL;
+  }
+
+  result->code = 0;
+  result->len = 0;
+  result->buf = buffers;
+
+  for (int i = 0, j = 0; i < len && j <= i; i++) {
+    char *str = dict_get(db->dict, keys[i]);
+    if (!str) {
+      continue;
+    }
+
+    int str_len = strlen(result);
+    char *buffer = (char *) db_malloc(sizeof(char) * (str_len + 1));
+    if (!buffer) {
+      return NULL;
+    }
+
+    strcpy(buffer, str);
+    result->buf[j] = buffer;
+    result->len++;
+  }
+
+  return result;
 }
 
 int db_delete(const CorgiDB *db, const char *key) {
