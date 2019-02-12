@@ -13,6 +13,7 @@
 #include <error.h>
 #include <dict.h>
 #include <memory.h>
+#include <result.h>
 
 CorgiDB *db_init(CorgiDBConfig *config) {
   CorgiDB *db;
@@ -41,20 +42,17 @@ int db_set_nx(const CorgiDB *db, const char *key, const char *value, const long 
   return dict_set(db->dict, key, value, SetFlag_NX, ttl);
 }
 
-char *db_get(const CorgiDB *db, const char *key) {
-  char *result = dict_get(db->dict, key);
-
+CorgiDBResult *db_get(const CorgiDB *db, const char *key) {
+  CorgiDBResult *result = db_result_init(1);
   if (!result) {
     return NULL;
   }
+  
+  char *str = dict_get(db->dict, key);
 
-  int len = strlen(result);
-  char *buffer = (char *) db_malloc(sizeof(char) * (len + 1));
-  if (!buffer) {
-    return NULL;
-  }
+  db_result_add(result, str);
 
-  return strcpy(buffer, result); 
+  return result;
 }
 
 int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, 
@@ -91,35 +89,18 @@ int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len, const l
 }
 
 CorgiDBResult *db_mget(const CorgiDB *db, const **keys, const int len) {
-  CorgiDBResult *result = (CorgiDBResult *) db_malloc(sizeof(CorgiDBResult));
+  CorgiDBResult *result = db_result_init(len);
   if (!result) {
     return NULL;
   }
 
-  char **buffers = (char **) db_malloc(sizeof(char *) * len);
-  if (!buffers) {
-    return NULL;
-  }
-
-  result->code = 0;
-  result->len = 0;
-  result->buf = buffers;
-
-  for (int i = 0, j = 0; i < len && j <= i; i++) {
+  for (int i = 0; i < len; i++) {
     char *str = dict_get(db->dict, keys[i]);
     if (!str) {
       continue;
     }
 
-    int str_len = strlen(result);
-    char *buffer = (char *) db_malloc(sizeof(char) * (str_len + 1));
-    if (!buffer) {
-      return NULL;
-    }
-
-    strcpy(buffer, str);
-    result->buf[j] = buffer;
-    result->len++;
+    db_result_add(result, str);
   }
 
   return result;

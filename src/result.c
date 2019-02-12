@@ -15,15 +15,20 @@ CorgiDBResult *db_result_init(int len) {
     return NULL;
   }
 
-  char **buffers = (char **) db_malloc(sizeof(char *) * len);
-  if (!buffers) {
-    free(result);
-    return NULL;
-  }
-
   result->code = RESULT_OK;
   result->len = 0;
-  result->buf = buffers;
+
+  if (len != 0) {
+    char **buffers = (char **) db_malloc(sizeof(char *) * len);
+    if (!buffers) {
+      free(result);
+      return NULL;
+    }
+  
+    result->buf = buffers;
+  }
+
+  return result;
 }
 
 int db_result_add(CorgiDBResult *result,  char *str) {
