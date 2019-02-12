@@ -6,6 +6,7 @@
 
 #include <config.h>
 #include <dict.h>
+#include <result.h>
 
 #ifndef _CORGI_H_
 #define _CORGI_H_
@@ -14,12 +15,6 @@ typedef struct CorgiDB {
   Dict *dict;
   CorgiDBConfig *config;
 } CorgiDB;
-
-typedef struct CorgiDBResult {
-  int code;
-  int len;
-  char **buf;
-} CorgiDBResult;
 
 // corgidb systems
 CorgiDB *db_init(CorgiDBConfig *config);
