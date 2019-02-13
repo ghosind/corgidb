@@ -162,6 +162,14 @@ int dict_set(Dict *dict, const char *key, const char *value,
       return 1;
     }
 
+    if (dict->transaction && dict->transaction->began == 1) {
+      // add change record.
+      int trans_result = trans_add_change(dict, node, 0);
+      if (trans_result) {
+        return 1;
+      }
+    }
+
     cstr_set(node->value, value);
 
     if (ttl > 0) {
@@ -186,7 +194,7 @@ int dict_set(Dict *dict, const char *key, const char *value,
   }
 
   if (dict->transaction && dict->transaction->began == 1) {
-    int trans_result = trans_add_change(dict, node);
+    int trans_result = trans_add_change(dict, new_node, 1);
     if (trans_result) {
       free(new_node);
       return 1;

@@ -51,7 +51,13 @@ int trans_rollback(void *dict_p) {
   while (change) {
     next = change->next;
 
-    cstr_set(((DictNode *) change->node)->value, change->value);
+    if (change->is_new) {
+      // delete new node.
+      dict_delete(dict, ((DictNode *) change->node)->key);
+    } else {
+      // change value if it is an existed node.
+      cstr_set(((DictNode *) change->node)->value, change->value);
+    }
 
     free(change->value);
     free(change);
@@ -62,7 +68,7 @@ int trans_rollback(void *dict_p) {
   dict->transaction->changes = NULL;
 }
 
-int trans_add_change(void *dict_p, void *node_p) {
+int trans_add_change(void *dict_p, void *node_p, short is_new) {
   Dict *dict = (Dict *) dict_p;
   DictNode *node = (DictNode *) node_p;
 
@@ -79,6 +85,7 @@ int trans_add_change(void *dict_p, void *node_p) {
 
   change->value = value;
   change->node = node;
+  change->is_new = is_new;
   change->next = dict->transaction->changes;
   dict->transaction->changes = change;
 
