@@ -7,6 +7,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include <error.h>
 #include <memory.h>

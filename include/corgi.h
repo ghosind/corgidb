@@ -28,7 +28,7 @@ CorgiDBResult *db_get(const CorgiDB *db, const char *key);
 int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, 
     const enum DBSetFlag flag, const long ttl);
 int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len, const long ttl);
-CorgiDBResult *db_mget(const CorgiDB *db, const **keys, const int len);
+CorgiDBResult *db_mget(const CorgiDB *db, const char **keys, const int len);
 int db_delete(const CorgiDB *db, const char *key);
 int db_strlen(const CorgiDB *db, const char *key);
 int db_exists(const CorgiDB *db, const char **keys, const int len);

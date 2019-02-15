@@ -88,7 +88,7 @@ int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len, const l
   return 0;
 }
 
-CorgiDBResult *db_mget(const CorgiDB *db, const **keys, const int len) {
+CorgiDBResult *db_mget(const CorgiDB *db, const char **keys, const int len) {
   CorgiDBResult *result = db_result_init(len);
   if (!result) {
     return NULL;

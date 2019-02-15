@@ -6,6 +6,7 @@
 
 #include <time.h>
 
+#include <config.h>
 #include <cstring.h>
 #include <transaction.h>
 

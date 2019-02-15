@@ -7,8 +7,6 @@
 #ifndef _TRANSACTION_H_
 #define _TRANSACTION_H_
 
-#include <dict.h>
-
 typedef struct Change {
   char *value;
   void *node;

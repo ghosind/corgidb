@@ -4,6 +4,8 @@
  * Copyright (C) 2019, Chen Su <ghosind@gmail.com>. All right reserved.
  */
 
+#include <string.h>
+
 #include <cstring.h>
 #include <dict.h>
 #include <memory.h>
@@ -40,6 +42,8 @@ int trans_commit(void *dict_p) {
 
   dict->transaction->began = 0;
   dict->transaction->changes = NULL;
+
+  return 0;
 }
 
 int trans_rollback(void *dict_p) {
@@ -53,7 +57,7 @@ int trans_rollback(void *dict_p) {
 
     if (change->is_new) {
       // delete new node.
-      dict_delete(dict, ((DictNode *) change->node)->key);
+      dict_delete(dict, cstr_get(((DictNode *) change->node)->key));
     } else {
       // change value if it is an existed node.
       cstr_set(((DictNode *) change->node)->value, change->value);
@@ -66,6 +70,8 @@ int trans_rollback(void *dict_p) {
 
   dict->transaction->began = 0;
   dict->transaction->changes = NULL;
+
+  return 0;
 }
 
 int trans_add_change(void *dict_p, void *node_p, short is_new) {
@@ -77,7 +83,8 @@ int trans_add_change(void *dict_p, void *node_p, short is_new) {
     return 1;
   }
 
-  char *value = (char *) db_memcpy(node->value, strlen(node->value));
+  char *str = cstr_get(node->value);
+  char *value = (char *) db_memcpy(str, strlen(str));
   if (!value) {
     free(change);
     return 1;
