@@ -50,7 +50,9 @@ CorgiDBResult *db_get(const CorgiDB *db, const char *key) {
   
   char *str = dict_get(db->dict, key);
 
-  db_result_add(result, str);
+  if (str) {
+    db_result_add(result, str);
+  }
 
   return result;
 }
@@ -100,7 +102,9 @@ CorgiDBResult *db_mget(const CorgiDB *db, const char **keys, const int len) {
       continue;
     }
 
-    db_result_add(result, str);
+    if (!str) {
+      db_result_add(result, str);
+    }
   }
 
   return result;
