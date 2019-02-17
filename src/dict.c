@@ -133,6 +133,7 @@ DictNode *dict_find(Dict *dict, const char *key, DictNode **prev) {
     cstr_free(node->value);
     cstr_free(node->key);
     free(node);
+    dict->used--;
 
     return NULL;
   }
@@ -249,6 +250,25 @@ int dict_delete(Dict *dict, const char *key) {
   cstr_free(node->key);
   cstr_free(node->value);
   free(node);
+  dict->used--;
 
   return 0;
+}
+
+char **dict_keys(Dict *dict) {
+  char **keys = (char **) db_malloc(sizeof(char *) * dict->used);
+  if (!keys) {
+    return NULL;
+  }
+
+  for (int i = 0, j = 0; i < dict->size && j < dict->used; i++) {
+    DictNode *node = *(dict->table + i);
+
+    while (node) {
+      keys[j++] = cstr_get(node->key);
+      node = node->next;
+    }
+  }
+
+  return keys;
 }

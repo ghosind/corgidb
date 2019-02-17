@@ -21,6 +21,7 @@ CorgiDB *db_init(CorgiDBConfig *config);
 int db_resize(CorgiDB *db, const unsigned int size);
 
 // corgidb commands
+CorgiDBResult *db_keys(const CorgiDB *db);
 int db_set(const CorgiDB *db, const char *key, const char *value, 
     const enum DBSetFlag flag, const long ttl);
 int db_set_nx(const CorgiDB *db, const char *key, const char *value, const long ttl);

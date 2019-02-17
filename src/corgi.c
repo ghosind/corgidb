@@ -33,6 +33,21 @@ int db_resize(CorgiDB *db, const unsigned int size) {
   return dict_resize(db->dict, size);
 }
 
+CorgiDBResult *db_keys(const CorgiDB *db) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
+  char **keys = dict_keys(db->dict);
+
+  for (int i = 0; i < db->dict->used; i++) {
+    db_result_add(result, *(keys + i));
+  }
+
+  return result;
+}
+
 int db_set(const CorgiDB *db, const char *key, const char *value, 
     const enum DBSetFlag flag, const long ttl) {
   return dict_set(db->dict, key, value, flag, ttl);

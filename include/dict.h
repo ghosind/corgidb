@@ -47,5 +47,6 @@ char *dict_get(Dict *dict, const char *key);
 int dict_set(Dict *dict, const char *key, const char *value, 
     const enum DBSetFlag flag, const long ttl);
 int dict_delete(Dict *dict, const char *key);
+char **dict_keys(Dict *dict);
 
 #endif
