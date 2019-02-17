@@ -95,7 +95,7 @@ int dict_resize(Dict *dict, const int size) {
   return 0;
 }
 
-DictNode *dict_find(Dict *dict, const char *key, DictNode *prev) {
+DictNode *dict_find(Dict *dict, const char *key, DictNode **prev) {
   if (dict->size == 0) {
     return NULL;
   }
@@ -115,8 +115,12 @@ DictNode *dict_find(Dict *dict, const char *key, DictNode *prev) {
     node = node->next;
   }
 
+  if (!node) {
+    return NULL;
+  }
+
   if (prev != NULL) {
-    prev = node;
+    *prev = prev_node;
   }
 
   if (node->expire != 0 && node->expire < time(NULL)) {
@@ -213,6 +217,7 @@ int dict_set(Dict *dict, const char *key, const char *value,
   }
 
   dict->table[hash_key] = new_node;
+  dict->used++;
 
   return 0;
 }
@@ -224,9 +229,9 @@ int dict_delete(Dict *dict, const char *key) {
   }
 
   DictNode *node, *prev;
-  
+
   // get node and previous node.
-  node = dict_find(dict, key, prev);
+  node = dict_find(dict, key, &prev);
 
   if (node == NULL) {
     // key is not exists.

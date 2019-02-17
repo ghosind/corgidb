@@ -41,7 +41,7 @@ Dict *dict_init(CorgiDBConfig *config);
 void dict_reset(Dict *dict);
 
 int dict_resize(Dict *dict, const int size);
-DictNode *dict_find(Dict *dict, const char *key, DictNode *prev);
+DictNode *dict_find(Dict *dict, const char *key, DictNode **prev);
 
 char *dict_get(Dict *dict, const char *key);
 int dict_set(Dict *dict, const char *key, const char *value, 
