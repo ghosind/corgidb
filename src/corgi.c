@@ -130,7 +130,7 @@ int db_delete(const CorgiDB *db, const char *key) {
 }
 
 int db_strlen(const CorgiDB *db, const char *key) {
-  DictNode *node = dict_find(db->dict, key, NULL);
+  DictNode *node = dict_find(db->dict, key);
 
   if (!node) {
     return -1;
@@ -143,14 +143,14 @@ int db_exists(const CorgiDB *db, const char **keys, const int len) {
   int result = 0;
 
   for (int i = 0; i < len; i++) {
-    result += dict_find(db->dict, keys[i], NULL) ? 1 : 0;
+    result += dict_find(db->dict, keys[i]) ? 1 : 0;
   }
 
   return result;
 }
 
 int db_append(const CorgiDB *db, const char *key, const char *value) {
-  DictNode *node = dict_find(db->dict, key, NULL);
+  DictNode *node = dict_find(db->dict, key);
   if (!node) {
     return -1;
   }
@@ -159,7 +159,7 @@ int db_append(const CorgiDB *db, const char *key, const char *value) {
 }
 
 int db_ttl(const CorgiDB *db, const char *key) {
-  DictNode *node = dict_find(db->dict, key, NULL);
+  DictNode *node = dict_find(db->dict, key);
   if (!node) {
     return -1;
   }
@@ -176,7 +176,7 @@ int db_expire(const CorgiDB *db, const char *key, const long ttl) {
     return -2;
   }
 
-  DictNode *node = dict_find(db->dict, key, NULL);
+  DictNode *node = dict_find(db->dict, key);
   if (!node) {
     return -1;
   }
@@ -186,7 +186,7 @@ int db_expire(const CorgiDB *db, const char *key, const long ttl) {
 }
 
 int db_persist(const CorgiDB *db, const char *key) {
-  DictNode *node = dict_find(db->dict, key, NULL);
+  DictNode *node = dict_find(db->dict, key);
   if (!node) {
     return -1;
   }

@@ -95,23 +95,23 @@ int dict_resize(Dict *dict, const int size) {
   return 0;
 }
 
-DictNode *dict_find(Dict *dict, const char *key, DictNode **prev) {
+DictNode *dict_find(Dict *dict, const char *key) {
   if (dict->size == 0) {
     return NULL;
   }
 
   int hash_key = get_hash(dict, key);
-  DictNode *node, *prev_node;
+  DictNode *node, *prev;
   
   node = dict->table[hash_key];
-  prev_node = NULL;
+  prev = NULL;
 
   while (node) {
     if (cstr_is_equal(node->key, key)) {
       break;
     }
 
-    prev_node = node;
+    prev = node;
     node = node->next;
   }
 
@@ -119,20 +119,15 @@ DictNode *dict_find(Dict *dict, const char *key, DictNode **prev) {
     return NULL;
   }
 
-  if (prev != NULL) {
-    *prev = prev_node;
-  }
-
   if (node->expire != 0 && node->expire < time(NULL)) {
-    if (!prev_node) {
+    // delete expired node.
+    if (!prev) {
       dict->table[hash_key] = node->next;
     } else {
-      prev_node->next = node->next;
+      prev->next = node->next;
     }
 
-    cstr_free(node->value);
-    cstr_free(node->key);
-    free(node);
+    dict_free_node(node);
     dict->used--;
 
     return NULL;
@@ -147,7 +142,7 @@ char *dict_get(Dict *dict, const char *key) {
     return NULL;
   }
 
-  DictNode *node = dict_find(dict, key, NULL);
+  DictNode *node = dict_find(dict, key);
 
   return node ? cstr_get(node->value) : NULL;
 }
@@ -159,7 +154,7 @@ int dict_set(Dict *dict, const char *key, const char *value,
     return 1;
   }
 
-  DictNode *node = dict_find(dict, key, NULL);
+  DictNode *node = dict_find(dict, key);
   time_t now = time(NULL);
 
   if (node) {
@@ -226,20 +221,29 @@ int dict_set(Dict *dict, const char *key, const char *value,
 int dict_delete(Dict *dict, const char *key) {
   if (!dict || !key) {
     db_error(ERR_SYS_PARAMS, "Dictionary and key cannot be empty");
-    return 1;
+    return ERR_SYS_PARAMS;
   }
 
   DictNode *node, *prev;
+  int hash_key = get_hash(dict, key);
 
-  // get node and previous node.
-  node = dict_find(dict, key, &prev);
+  node = dict->table[hash_key];
+  prev = NULL;
 
-  if (node == NULL) {
+  while (node) {
+    if (cstr_is_equal(node->key, key)) {
+      break;
+    }
+
+    prev = node;
+    node = node->next;
+  }
+
+  if (!node) {
     // key is not exists.
     return 1;
   }
 
-  int hash_key = get_hash(dict, key);
   if (prev == NULL) {
     // it is the first node of list.
     dict->table[hash_key] = node->next;
@@ -247,9 +251,7 @@ int dict_delete(Dict *dict, const char *key) {
     prev->next = node->next;
   }
 
-  cstr_free(node->key);
-  cstr_free(node->value);
-  free(node);
+  dict_free_node(node);
   dict->used--;
 
   return 0;
@@ -271,4 +273,10 @@ char **dict_keys(Dict *dict) {
   }
 
   return keys;
+}
+
+void dict_free_node(DictNode *node) {
+  cstr_free(node->key);
+  cstr_free(node->value);
+  free(node);
 }
