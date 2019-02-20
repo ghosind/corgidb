@@ -6,7 +6,7 @@
 int main(int argc, char **argv) {
   CorgiDBConfig *config;
   CorgiDB *db;
-  char *result;
+  CorgiDBResult *result;
 
   config = db_get_config();
   if (!config) {
@@ -23,8 +23,8 @@ int main(int argc, char **argv) {
   db_append(db, "greeting", " world!");
 
   result = db_get(db, "greeting");
-  if (result) {
-    printf("%s\n", result);
+  if (result && result->code == RESULT_OK && result->len > 0) {
+    printf("%s\n", result->buf[0]);
 
     free(result);
   }

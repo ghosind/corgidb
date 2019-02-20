@@ -24,13 +24,13 @@ CString *cstr_create(const char *str) {
   // allocate length * 2 memory for buffer
   int length = strlen(str);
   // last byte for '\0'
-  char *buffer = (char *) db_malloc(sizeof(char) * (length * 2 + 1));
+  char *buffer = (char *) db_malloc(sizeof(char) * (length + 1));
   if (!buffer) {
     return NULL;
   }
 
   strcpy(buffer, str);
-  str_node->size = length * 2;
+  str_node->size = length;
   str_node->used = length;
   str_node->buffer = buffer;
 
@@ -89,13 +89,13 @@ int cstr_append(CString *node, const char *str) {
   int length = strlen(str);
 
   if (node->used + length > node->size) {
-    char *new_buffer = (char *) db_realloc(node->buffer, (node->used + length) * 2 + 1);
+    char *new_buffer = (char *) db_realloc(node->buffer, node->used + length + 1);
     if (!new_buffer) {
       return -1;
     }
 
     node->buffer = new_buffer;
-    node->size = (node->used + length) * 2;
+    node->size = node->used + length;
   }
 
   node->buffer = strcat(node->buffer, str);
