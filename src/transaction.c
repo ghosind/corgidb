@@ -83,14 +83,19 @@ int trans_add_change(void *dict_p, void *node_p, short is_new) {
     return 1;
   }
 
-  char *str = cstr_get(node->value);
-  char *value = (char *) db_memcpy(str, strlen(str));
-  if (!value) {
-    free(change);
-    return 1;
-  }
+  if (!is_new) {
+    char *str = cstr_get(node->value);
+    char *value = (char *) db_memcpy(str, strlen(str));
+    if (!value) {
+      free(change);
+      return 1;
+    }
 
-  change->value = value;
+    change->value = value;
+  } else {
+    change->value = NULL;
+  }
+  
   change->node = node;
   change->is_new = is_new;
   change->next = dict->transaction->changes;
