@@ -53,8 +53,13 @@ int db_set(const CorgiDB *db, const char *key, const char *value,
   return dict_set(db->dict, key, value, flag, ttl);
 }
 
-int db_set_nx(const CorgiDB *db, const char *key, const char *value, const long ttl) {
-  return dict_set(db->dict, key, value, SetFlag_NX, ttl);
+int db_set_ex(const CorgiDB *db, const char *key, const char *value, 
+    const long ttl) {
+  return dict_set(db->dict, key, value, SetFlag_NONE, ttl);
+}
+
+int db_set_nx(const CorgiDB *db, const char *key, const char *value) {
+  return dict_set(db->dict, key, value, SetFlag_NX, 0);
 }
 
 CorgiDBResult *db_get(const CorgiDB *db, const char *key) {
@@ -89,11 +94,36 @@ int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len,
   return 0;
 }
 
-int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len, const long ttl) {
+int db_mset_ex(const CorgiDB *db, const char ***kv_pairs, const int len, 
+    const long ttl) {
   trans_begin(db->dict);
 
   for (int i = 0; i < len; i++) {
-    int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NX, ttl);
+    int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NONE, ttl);
+
+    if (result) {
+      trans_rollback(db->dict);
+      return result;
+    }
+  }
+
+  trans_commit(db->dict);
+  return 0;
+}
+
+int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len) {
+  for (int i = 0; i < len; i++) {
+    int exists = dict_key_exist(db->dict, kv_pairs[i][0]);
+
+    if (exists) {
+      return 1;
+    }
+  }
+
+  trans_begin(db->dict);
+
+  for (int i = 0; i < len; i++) {
+    int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NX, 0);
 
     if (result) {
       trans_rollback(db->dict);

@@ -275,6 +275,21 @@ char **dict_keys(Dict *dict) {
   return keys;
 }
 
+int dict_key_exist(const Dict *dict, const char *key) {
+  DictNode *node;
+  int hash_key = get_hash(dict, key);
+
+  node = dict->table[hash_key];
+
+  while (node) {
+    if (cstr_is_equal(node->key, key)) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
 void dict_free_node(DictNode *node) {
   cstr_free(node->key);
   cstr_free(node->value);
