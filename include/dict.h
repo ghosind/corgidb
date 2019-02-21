@@ -48,7 +48,8 @@ int dict_set(Dict *dict, const char *key, const char *value,
     const enum DBSetFlag flag, const long ttl);
 int dict_delete(Dict *dict, const char *key);
 char **dict_keys(Dict *dict);
-int dict_key_exist(const Dict *dict, const char *key);
+int dict_key_exist(Dict *dict, const char *key);
+void dict_flush(Dict *dict);
 void dict_free_node(DictNode *node);
 
 #endif

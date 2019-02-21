@@ -275,7 +275,7 @@ char **dict_keys(Dict *dict) {
   return keys;
 }
 
-int dict_key_exist(const Dict *dict, const char *key) {
+int dict_key_exist(Dict *dict, const char *key) {
   DictNode *node;
   int hash_key = get_hash(dict, key);
 
@@ -288,6 +288,20 @@ int dict_key_exist(const Dict *dict, const char *key) {
   }
 
   return 0;
+}
+
+void dict_flush(Dict *dict) {
+  for (int i = 0, j = 0; i < dict->size && j < dict->used; i++) {
+    DictNode *node, *next;
+
+    node = dict->table[i];
+    while (node) {
+      next = node->next;
+      dict_free_node(node);
+      dict->used--;
+      node = next;
+    }
+  }
 }
 
 void dict_free_node(DictNode *node) {

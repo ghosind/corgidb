@@ -225,6 +225,11 @@ int db_persist(const CorgiDB *db, const char *key) {
   return 0;
 }
 
+int db_flush(const CorgiDB *db) {
+  dict_flush(db->dict);
+  return 0;
+}
+
 int db_begin(const CorgiDB *db) {
   return trans_begin(db->dict);
 }
