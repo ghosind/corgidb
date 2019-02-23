@@ -64,6 +64,29 @@ int cstr_set(CString *node, const char *str) {
   return 0;
 }
 
+int cstr_set_range(CString *node, const char *str, int offset) {
+  if (offset < 0) {
+    return 1;
+  }
+
+  int length = strlen(str);
+
+  if (length + offset > node->size) {
+    char *new_buffer = (char *) db_realloc(node->buffer, length + offset + 1);
+    if (!new_buffer) {
+      return 1;
+    }
+
+    node->buffer = new_buffer;
+    node->size = length + offset;
+  }
+
+  strcpy(node->buffer + offset, str);
+  node->used = length + offset;
+
+  return 0;
+}
+
 void cstr_free(CString *node) {
   free(node->buffer);
   free(node);
