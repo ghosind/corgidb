@@ -28,6 +28,8 @@ int db_set_ex(const CorgiDB *db, const char *key, const char *value,
     const long ttl);
 int db_set_nx(const CorgiDB *db, const char *key, const char *value);
 CorgiDBResult *db_get(const CorgiDB *db, const char *key);
+CorgiDBResult *db_get_range(const CorgiDB *db, const char *key, 
+  const unsigned int start, const unsigned int end);
 CorgiDBResult *db_getset(const CorgiDB *db, const char *key, const char *value);
 int db_set_range(const CorgiDB *db, const char *key, const char *value, 
     const int offset);

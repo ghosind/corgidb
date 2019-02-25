@@ -17,6 +17,8 @@ typedef struct CString {
 
 CString *cstr_create(const char *str);
 char *cstr_get(CString *node);
+char *cstr_get_range(CString *node, const unsigned int start, 
+    const unsigned int end, int *length);
 int cstr_set(CString *node, const char *str);
 int cstr_set_range(CString *node, const char *str, int offset);
 void cstr_free(CString *node);

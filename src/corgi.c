@@ -77,6 +77,24 @@ CorgiDBResult *db_get(const CorgiDB *db, const char *key) {
   return result;
 }
 
+CorgiDBResult *db_get_range(const CorgiDB *db, const char *key, 
+  const unsigned int start, const unsigned int end) {
+  CorgiDBResult *result = db_result_init(1);
+  if (!result) {
+    return NULL;
+  }
+  
+  DictNode *node = dict_find(db->dict, key);
+
+  if (node) {
+    int length = 0;
+    char *str = cstr_get_range(node->value, start - 1, end - 1, &length);
+    db_result_add_range(result, str, length);
+  }
+
+  return result;
+}
+
 CorgiDBResult *db_getset(const CorgiDB *db, const char *key, const char *value) {
   CorgiDBResult *result = db_get(db, key);
   db_set(db, key, value, SetFlag_NONE, 0);
@@ -91,7 +109,7 @@ int db_set_range(const CorgiDB *db, const char *key, const char *value,
     return 1;
   }
 
-  return cstr_set_range(node->value, value, offset);
+  return cstr_set_range(node->value, value, offset - 1);
 }
 
 int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, 

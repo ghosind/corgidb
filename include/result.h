@@ -19,5 +19,6 @@ typedef struct CorgiDBResult {
 
 CorgiDBResult *db_result_init(int len);
 int db_result_add(CorgiDBResult *result,  char *str);
+int db_result_add_range(CorgiDBResult *result, char *str, int length);
 
 #endif

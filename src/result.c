@@ -45,3 +45,21 @@ int db_result_add(CorgiDBResult *result,  char *str) {
 
   return 0;
 }
+
+int db_result_add_range(CorgiDBResult *result, char *str, int length) {
+  char *buffer = (char *) db_malloc(sizeof(char) * (length + 1));
+
+  if (!buffer) {
+    return 1;
+  }
+
+  int i = 0;
+  for (; i < length; i++) {
+    buffer[i] = str[i];
+  }
+  buffer[i] = '\0';
+  result->buf[result->len] = buffer;
+  result->len++;
+
+  return 0;
+}

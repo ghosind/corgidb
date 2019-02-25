@@ -20,9 +20,16 @@ int main(int argc, char **argv) {
 
   db_set(db, "key_1", "value_2", SetFlag_NONE, 0);
 
-  db_set_range(db, "key_1", "001", 6);
+  db_set_range(db, "key_1", "001", 7);
 
   result = db_get(db, "key_1");
+  if (result && result->code == RESULT_OK && result->len > 0) {
+    printf("%s\n", result->buf[0]);
+
+    free(result);
+  }
+
+  result = db_get_range(db, "key_1", 7, 7);
   if (result && result->code == RESULT_OK && result->len > 0) {
     printf("%s\n", result->buf[0]);
 

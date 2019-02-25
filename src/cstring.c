@@ -41,6 +41,16 @@ char *cstr_get(CString *node) {
   return node ? node->buffer : NULL;
 }
 
+char *cstr_get_range(CString *node, const unsigned int start, 
+    const unsigned int end, int *length) {
+  if (start > node->used || start > end) {
+    return NULL;
+  }
+
+  *length = (end > node->used ? node->used : end) - start + 1;
+  return node->buffer + start;
+}
+
 int cstr_set(CString *node, const char *str) {
   if (!node) {
     return 1;
