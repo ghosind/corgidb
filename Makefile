@@ -1,7 +1,7 @@
 LIBRARY_NAME := libcorgidb.a
 
 DIR_INC = ./include
-SRCS = ./src/config.c ./src/corgi.c ./src/cstring.c ./src/dict.c ./src/error.c ./src/hash.c ./src/memory.c ./src/result.c ./src/transaction.c
+SRCS = $(wildcard src/*.c)  
 OBJS := ${SRCS:.c=.o}
 
 CC = gcc

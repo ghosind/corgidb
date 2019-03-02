@@ -29,8 +29,15 @@ CorgiDB *db_init(CorgiDBConfig *config) {
   return db;
 }
 
-int db_resize(CorgiDB *db, const unsigned int size) {
-  return dict_resize(db->dict, size);
+CorgiDBResult *db_resize(CorgiDB *db, const unsigned int size) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
+  result->code = dict_resize(db->dict, size);
+
+  return result;
 }
 
 CorgiDBResult *db_keys(const CorgiDB *db) {
@@ -48,18 +55,39 @@ CorgiDBResult *db_keys(const CorgiDB *db) {
   return result;
 }
 
-int db_set(const CorgiDB *db, const char *key, const char *value, 
+CorgiDBResult *db_set(const CorgiDB *db, const char *key, const char *value, 
     const enum DBSetFlag flag, const long ttl) {
-  return dict_set(db->dict, key, value, flag, ttl);
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
+  result->code = dict_set(db->dict, key, value, flag, ttl);
+
+  return result;
 }
 
-int db_set_ex(const CorgiDB *db, const char *key, const char *value, 
+CorgiDBResult *db_set_ex(const CorgiDB *db, const char *key, const char *value, 
     const long ttl) {
-  return dict_set(db->dict, key, value, SetFlag_NONE, ttl);
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
+  result->code = dict_set(db->dict, key, value, SetFlag_NONE, ttl);
+
+  return result;
 }
 
-int db_set_nx(const CorgiDB *db, const char *key, const char *value) {
-  return dict_set(db->dict, key, value, SetFlag_NX, 0);
+CorgiDBResult *db_set_nx(const CorgiDB *db, const char *key, const char *value) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+  
+  result->code = dict_set(db->dict, key, value, SetFlag_NX, 0);
+
+  return result;
 }
 
 CorgiDBResult *db_get(const CorgiDB *db, const char *key) {
@@ -97,77 +125,115 @@ CorgiDBResult *db_get_range(const CorgiDB *db, const char *key,
 
 CorgiDBResult *db_getset(const CorgiDB *db, const char *key, const char *value) {
   CorgiDBResult *result = db_get(db, key);
-  db_set(db, key, value, SetFlag_NONE, 0);
+  
+  result->code |= dict_set(db, key, value, SetFlag_NONE, 0);
+  
   return result;
 }
 
-int db_set_range(const CorgiDB *db, const char *key, const char *value, 
+CorgiDBResult *db_set_range(const CorgiDB *db, const char *key, const char *value, 
     const int offset) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
   DictNode *node = dict_find(db->dict, key);
 
   if (!node) {
-    return 1;
+    result->code = -1;
+  } else {
+    result->len = cstr_set_range(node->value, value, offset - 1);
+    result->code = RESULT_OK;
   }
 
-  return cstr_set_range(node->value, value, offset - 1);
+  return result;
 }
 
-int db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, 
+CorgiDBResult *db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, 
     const enum DBSetFlag flag, const long ttl) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+  
   trans_begin(db->dict);
 
   for (int i = 0; i < len; i++) {
-    int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], flag, ttl);
+    int code = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], flag, ttl);
 
-    if (result) {
+    if (code) {
       trans_rollback(db->dict);
+      result->code = code;
       return result;
     }
   }
 
   trans_commit(db->dict);
-  return 0;
+
+  result->code = RESULT_OK;
+  
+  return result;
 }
 
-int db_mset_ex(const CorgiDB *db, const char ***kv_pairs, const int len, 
+CorgiDBResult *db_mset_ex(const CorgiDB *db, const char ***kv_pairs, const int len, 
     const long ttl) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
   trans_begin(db->dict);
 
   for (int i = 0; i < len; i++) {
-    int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NONE, ttl);
+    int code = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NONE, ttl);
 
-    if (result) {
+    if (code) {
       trans_rollback(db->dict);
+      result->code = code;
       return result;
     }
   }
 
   trans_commit(db->dict);
-  return 0;
+
+  result->code = RESULT_OK;
+
+  return result;
 }
 
-int db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len) {
+CorgiDBResult *db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
   for (int i = 0; i < len; i++) {
     int exists = dict_key_exist(db->dict, kv_pairs[i][0]);
 
     if (exists) {
-      return 1;
+      result->code = -1;
+      return result;
     }
   }
 
   trans_begin(db->dict);
 
   for (int i = 0; i < len; i++) {
-    int result = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NX, 0);
+    int code = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NX, 0);
 
-    if (result) {
+    if (code) {
       trans_rollback(db->dict);
+      result->code = code;
       return result;
     }
   }
 
   trans_commit(db->dict);
-  return 0;
+
+  result->code = RESULT_OK;
+
+  return result;
 }
 
 CorgiDBResult *db_mget(const CorgiDB *db, const char **keys, const int len) {
@@ -190,89 +256,175 @@ CorgiDBResult *db_mget(const CorgiDB *db, const char **keys, const int len) {
   return result;
 }
 
-int db_delete(const CorgiDB *db, const char *key) {
-  return dict_delete(db->dict, key);
+CorgiDBResult *db_delete(const CorgiDB *db, const char *key) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
+  result->code = dict_delete(db->dict, key);
+  
+  return result;
 }
 
-int db_strlen(const CorgiDB *db, const char *key) {
+CorgiDBResult *db_strlen(const CorgiDB *db, const char *key) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
   DictNode *node = dict_find(db->dict, key);
 
   if (!node) {
-    return -1;
-  }
-
-  return cstr_len(node->value);
-}
-
-int db_exists(const CorgiDB *db, const char **keys, const int len) {
-  int result = 0;
-
-  for (int i = 0; i < len; i++) {
-    result += dict_find(db->dict, keys[i]) ? 1 : 0;
+    result->code = -1;
+  } else {
+    result->len = cstr_len(node->value);
+    result->code = RESULT_OK;
   }
 
   return result;
 }
 
-int db_append(const CorgiDB *db, const char *key, const char *value) {
-  DictNode *node = dict_find(db->dict, key);
-  if (!node) {
-    return -1;
+CorgiDBResult *db_exists(const CorgiDB *db, const char **keys, const int len) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
   }
 
-  return cstr_append(node->value, value);
+  int num = 0;
+
+  for (int i = 0; i < len; i++) {
+    num += dict_find(db->dict, keys[i]) ? 1 : 0;
+  }
+
+  result->code = RESULT_OK;
+  result->len = num;
+
+  return result;
 }
 
-int db_ttl(const CorgiDB *db, const char *key) {
+CorgiDBResult *db_append(const CorgiDB *db, const char *key, const char *value) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+  
   DictNode *node = dict_find(db->dict, key);
   if (!node) {
-    return -1;
+    result->code = -1;
+    return result;
+  }
+
+  result->code = cstr_append(node->value, value);
+
+  return result;
+}
+
+CorgiDBResult *db_ttl(const CorgiDB *db, const char *key) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
+  DictNode *node = dict_find(db->dict, key);
+  if (!node) {
+    result->code = -1;
+    return result;
   }
 
   if (node->expire == 0) {
-    return -2;
+    result->code = -2;
+    return result;
   }
 
-  return node->expire - time(NULL);
+  result->len = node->expire - time(NULL);
+  result->code = RESULT_OK;
+
+  return result;
 }
 
-int db_expire(const CorgiDB *db, const char *key, const long ttl) {
+CorgiDBResult *db_expire(const CorgiDB *db, const char *key, const long ttl) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
   if (ttl <= 0) {
-    return -2;
+    result->code = -2;
+    return result;
   }
 
   DictNode *node = dict_find(db->dict, key);
   if (!node) {
-    return -1;
+    result->code = -1;
+    return result;
   }
 
   node->expire = time(NULL) + ttl;
-  return 0;
+  result->code = RESULT_OK;
+
+  return result;
 }
 
-int db_persist(const CorgiDB *db, const char *key) {
+CorgiDBResult *db_persist(const CorgiDB *db, const char *key) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
   DictNode *node = dict_find(db->dict, key);
   if (!node) {
-    return -1;
+    result->code = -1;
+    return result;
   }
 
   node->expire = 0;
-  return 0;
+  result->code = RESULT_OK;
+
+  return result;
 }
 
-int db_flush(const CorgiDB *db) {
+CorgiDBResult *db_flush(const CorgiDB *db) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
   dict_flush(db->dict);
-  return 0;
+  result->code = RESULT_OK;
+
+  return result;
 }
 
-int db_begin(const CorgiDB *db) {
-  return trans_begin(db->dict);
+CorgiDBResult *db_begin(const CorgiDB *db) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
+  result->code = trans_begin(db->dict);
+  
+  return result;
 }
 
-int db_commit(const CorgiDB *db) {
-  return trans_commit(db->dict);
+CorgiDBResult *db_commit(const CorgiDB *db) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
+  result->code = trans_commit(db->dict);
+
+  return result;
 }
 
-int db_rollback(const CorgiDB *db) {
-  return trans_rollback(db->dict);
+CorgiDBResult *db_rollback(const CorgiDB *db) {
+  CorgiDBResult *result = db_result_init(db->dict->used);
+  if (!result) {
+    return NULL;
+  }
+
+  result->code = trans_rollback(db->dict);
+
+  return result;
 }
