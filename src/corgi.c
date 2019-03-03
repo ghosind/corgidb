@@ -67,7 +67,7 @@ CorgiDBResult *db_set(const CorgiDB *db, const char *key, const char *value,
   return result;
 }
 
-CorgiDBResult *db_set_ex(const CorgiDB *db, const char *key, const char *value, 
+CorgiDBResult *db_set_ex(const CorgiDB *db, const char *key, const char *value,
     const long ttl) {
   CorgiDBResult *result = db_result_init(db->dict->used);
   if (!result) {
@@ -79,7 +79,8 @@ CorgiDBResult *db_set_ex(const CorgiDB *db, const char *key, const char *value,
   return result;
 }
 
-CorgiDBResult *db_set_nx(const CorgiDB *db, const char *key, const char *value) {
+CorgiDBResult *db_set_nx(const CorgiDB *db, const char *key, 
+    const char *value) {
   CorgiDBResult *result = db_result_init(db->dict->used);
   if (!result) {
     return NULL;
@@ -123,7 +124,8 @@ CorgiDBResult *db_get_range(const CorgiDB *db, const char *key,
   return result;
 }
 
-CorgiDBResult *db_getset(const CorgiDB *db, const char *key, const char *value) {
+CorgiDBResult *db_getset(const CorgiDB *db, const char *key, 
+    const char *value) {
   CorgiDBResult *result = db_get(db, key);
   
   result->code |= dict_set(db, key, value, SetFlag_NONE, 0);
@@ -131,8 +133,8 @@ CorgiDBResult *db_getset(const CorgiDB *db, const char *key, const char *value) 
   return result;
 }
 
-CorgiDBResult *db_set_range(const CorgiDB *db, const char *key, const char *value, 
-    const int offset) {
+CorgiDBResult *db_set_range(const CorgiDB *db, const char *key, 
+    const char *value, const int offset) {
   CorgiDBResult *result = db_result_init(db->dict->used);
   if (!result) {
     return NULL;
@@ -141,7 +143,7 @@ CorgiDBResult *db_set_range(const CorgiDB *db, const char *key, const char *valu
   DictNode *node = dict_find(db->dict, key);
 
   if (!node) {
-    result->code = -1;
+    result->code = ERR_NO_KEY;
   } else {
     result->len = cstr_set_range(node->value, value, offset - 1);
     result->code = RESULT_OK;
@@ -150,8 +152,8 @@ CorgiDBResult *db_set_range(const CorgiDB *db, const char *key, const char *valu
   return result;
 }
 
-CorgiDBResult *db_mset(const CorgiDB *db, const char ***kv_pairs, const int len, 
-    const enum DBSetFlag flag, const long ttl) {
+CorgiDBResult *db_mset(const CorgiDB *db, const char ***kv_pairs, 
+    const int len, const enum DBSetFlag flag, const long ttl) {
   CorgiDBResult *result = db_result_init(db->dict->used);
   if (!result) {
     return NULL;
@@ -176,8 +178,8 @@ CorgiDBResult *db_mset(const CorgiDB *db, const char ***kv_pairs, const int len,
   return result;
 }
 
-CorgiDBResult *db_mset_ex(const CorgiDB *db, const char ***kv_pairs, const int len, 
-    const long ttl) {
+CorgiDBResult *db_mset_ex(const CorgiDB *db, const char ***kv_pairs, 
+    const int len, const long ttl) {
   CorgiDBResult *result = db_result_init(db->dict->used);
   if (!result) {
     return NULL;
@@ -186,7 +188,8 @@ CorgiDBResult *db_mset_ex(const CorgiDB *db, const char ***kv_pairs, const int l
   trans_begin(db->dict);
 
   for (int i = 0; i < len; i++) {
-    int code = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NONE, ttl);
+    int code = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], 
+        SetFlag_NONE, ttl);
 
     if (code) {
       trans_rollback(db->dict);
@@ -202,7 +205,8 @@ CorgiDBResult *db_mset_ex(const CorgiDB *db, const char ***kv_pairs, const int l
   return result;
 }
 
-CorgiDBResult *db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int len) {
+CorgiDBResult *db_mset_nx(const CorgiDB *db, const char ***kv_pairs, 
+    const int len) {
   CorgiDBResult *result = db_result_init(db->dict->used);
   if (!result) {
     return NULL;
@@ -212,7 +216,7 @@ CorgiDBResult *db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int l
     int exists = dict_key_exist(db->dict, kv_pairs[i][0]);
 
     if (exists) {
-      result->code = -1;
+      result->code = ERR_KEY_EXIST;
       return result;
     }
   }
@@ -220,7 +224,8 @@ CorgiDBResult *db_mset_nx(const CorgiDB *db, const char ***kv_pairs, const int l
   trans_begin(db->dict);
 
   for (int i = 0; i < len; i++) {
-    int code = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], SetFlag_NX, 0);
+    int code = dict_set(db->dict, kv_pairs[i][0], kv_pairs[i][1], 
+        SetFlag_NX, 0);
 
     if (code) {
       trans_rollback(db->dict);
@@ -276,7 +281,7 @@ CorgiDBResult *db_strlen(const CorgiDB *db, const char *key) {
   DictNode *node = dict_find(db->dict, key);
 
   if (!node) {
-    result->code = -1;
+    result->code = ERR_NO_KEY;
   } else {
     result->len = cstr_len(node->value);
     result->code = RESULT_OK;
@@ -303,7 +308,8 @@ CorgiDBResult *db_exists(const CorgiDB *db, const char **keys, const int len) {
   return result;
 }
 
-CorgiDBResult *db_append(const CorgiDB *db, const char *key, const char *value) {
+CorgiDBResult *db_append(const CorgiDB *db, const char *key, 
+    const char *value) {
   CorgiDBResult *result = db_result_init(db->dict->used);
   if (!result) {
     return NULL;
@@ -311,7 +317,7 @@ CorgiDBResult *db_append(const CorgiDB *db, const char *key, const char *value) 
   
   DictNode *node = dict_find(db->dict, key);
   if (!node) {
-    result->code = -1;
+    result->code = ERR_NO_KEY;
     return result;
   }
 
@@ -328,12 +334,12 @@ CorgiDBResult *db_ttl(const CorgiDB *db, const char *key) {
 
   DictNode *node = dict_find(db->dict, key);
   if (!node) {
-    result->code = -1;
+    result->code = ERR_NO_KEY;
     return result;
   }
 
   if (node->expire == 0) {
-    result->code = -2;
+    result->code = ERR_NO_TTL;
     return result;
   }
 
@@ -350,13 +356,13 @@ CorgiDBResult *db_expire(const CorgiDB *db, const char *key, const long ttl) {
   }
 
   if (ttl <= 0) {
-    result->code = -2;
+    result->code = ERR_USR_TTL;
     return result;
   }
 
   DictNode *node = dict_find(db->dict, key);
   if (!node) {
-    result->code = -1;
+    result->code = ERR_NO_KEY;
     return result;
   }
 
@@ -374,7 +380,7 @@ CorgiDBResult *db_persist(const CorgiDB *db, const char *key) {
 
   DictNode *node = dict_find(db->dict, key);
   if (!node) {
-    result->code = -1;
+    result->code = ERR_NO_KEY;
     return result;
   }
 

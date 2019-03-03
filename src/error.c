@@ -11,7 +11,8 @@
 
 #include <error.h>
 
-void db_error(const enum DBErrorCode error_code, const char *message, ...) {
+void db_error(const enum CorgiDBStatusCode error_code, 
+    const char *message, ...) {
   va_list args;
   
   va_start(args, message);
@@ -20,7 +21,8 @@ void db_error(const enum DBErrorCode error_code, const char *message, ...) {
   vfprintf(stderr, message, args);
 }
 
-void db_fatal(const enum DBErrorCode error_code, const char *message, ...) {
+void db_fatal(const enum CorgiDBStatusCode error_code, 
+    const char *message, ...) {
   va_list args;
 
   va_start(args, message);

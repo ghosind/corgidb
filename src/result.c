@@ -9,7 +9,7 @@
 
 #include <string.h>
 
-CorgiDBResult *db_result_init(int len) {
+CorgiDBResult *db_result_init(const int len) {
   CorgiDBResult *result = (CorgiDBResult *) db_malloc(sizeof(CorgiDBResult));
   if (!result) {
     return NULL;
@@ -31,7 +31,7 @@ CorgiDBResult *db_result_init(int len) {
   return result;
 }
 
-int db_result_add(CorgiDBResult *result,  char *str) {
+int db_result_add(CorgiDBResult *result, const char *str) {
   int length = strlen(str);
   char *buffer = (char *) db_malloc(sizeof(char) * (length + 1));
 
@@ -46,7 +46,8 @@ int db_result_add(CorgiDBResult *result,  char *str) {
   return 0;
 }
 
-int db_result_add_range(CorgiDBResult *result, char *str, int length) {
+int db_result_add_range(CorgiDBResult *result, const char *str, 
+    const int length) {
   char *buffer = (char *) db_malloc(sizeof(char) * (length + 1));
 
   if (!buffer) {
