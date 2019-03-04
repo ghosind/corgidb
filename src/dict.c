@@ -92,7 +92,7 @@ int dict_resize(Dict *dict, const int size) {
   dict->mask = size;
   dict->table = new_table;
 
-  return 0;
+  return RESULT_OK;
 }
 
 DictNode *dict_find(Dict *dict, const char *key) {
@@ -151,7 +151,7 @@ int dict_set(Dict *dict, const char *key, const char *value,
     const enum DBSetFlag flag, const long ttl) {
   if (!dict || !key || !value) {
     db_error(ERR_SYS_PARAMS, "Dictionary, key, and value cannot be empty");
-    return 1;
+    return ERR_SYS_PARAMS;
   }
 
   DictNode *node = dict_find(dict, key);
@@ -159,14 +159,14 @@ int dict_set(Dict *dict, const char *key, const char *value,
 
   if (node) {
     if (flag == SetFlag_NX) {
-      return 1;
+      return ERR_KEY_EXIST;
     }
 
-    if (dict->transaction && dict->transaction->began == 1) {
+    if (dict->transaction && dict->transaction->status == TS_BEGAN) {
       // add change record.
       int trans_result = trans_add_change(dict, node, 0);
       if (trans_result) {
-        return 1;
+        return trans_result;
       }
     }
 
@@ -176,11 +176,11 @@ int dict_set(Dict *dict, const char *key, const char *value,
       node->expire = now + ttl;
     }
 
-    return 0;
+    return RESULT_OK;
   }
 
   if (flag == SetFlag_XX) {
-    return 1;
+    return ERR_KEY_NOT_EXIST;
   }
 
   if (dict->used == dict->size) {
@@ -193,11 +193,11 @@ int dict_set(Dict *dict, const char *key, const char *value,
     return ERR_MEM_ALLOC;
   }
 
-  if (dict->transaction && dict->transaction->began == 1) {
+  if (dict->transaction && dict->transaction->status == TS_BEGAN) {
     int trans_result = trans_add_change(dict, new_node, 1);
     if (trans_result) {
       free(new_node);
-      return 1;
+      return trans_result;
     }
   }
 
@@ -215,7 +215,7 @@ int dict_set(Dict *dict, const char *key, const char *value,
   dict->table[hash_key] = new_node;
   dict->used++;
 
-  return 0;
+  return RESULT_OK;
 }
 
 int dict_delete(Dict *dict, const char *key) {
@@ -241,7 +241,7 @@ int dict_delete(Dict *dict, const char *key) {
 
   if (!node) {
     // key is not exists.
-    return 1;
+    return ERR_NO_KEY;
   }
 
   if (prev == NULL) {
@@ -254,7 +254,7 @@ int dict_delete(Dict *dict, const char *key) {
   dict_free_node(node);
   dict->used--;
 
-  return 0;
+  return RESULT_OK;
 }
 
 char **dict_keys(Dict *dict) {
@@ -283,11 +283,11 @@ int dict_key_exist(Dict *dict, const char *key) {
 
   while (node) {
     if (cstr_is_equal(node->key, key)) {
-      return 1;
+      return RESULT_KEY_EXIST;
     }
   }
 
-  return 0;
+  return ERR_NO_KEY;
 }
 
 void dict_flush(Dict *dict) {

@@ -53,7 +53,7 @@ char *cstr_get_range(CString *node, const unsigned int start,
 
 int cstr_set(CString *node, const char *str) {
   if (!node) {
-    return 1;
+    return ERR_CSTR_NO_NODE;
   }
 
   int length = strlen(str);
@@ -61,7 +61,7 @@ int cstr_set(CString *node, const char *str) {
   if (length > node->size) {
     char *new_buffer = (char *) db_realloc(node->buffer, length + 1);
     if (!new_buffer) {
-      return 1;
+      return ERR_MEM_REALLOC;
     }
 
     node->buffer = new_buffer;
@@ -71,12 +71,12 @@ int cstr_set(CString *node, const char *str) {
   strcpy(node->buffer, str);
   node->used = length;
 
-  return 0;
+  return RESULT_OK;
 }
 
 int cstr_set_range(CString *node, const char *str, int offset) {
   if (offset < 0) {
-    return 1;
+    return ERR_CSTR_OFFSET_OVER;
   }
 
   int length = strlen(str);
@@ -84,7 +84,7 @@ int cstr_set_range(CString *node, const char *str, int offset) {
   if (length + offset > node->size) {
     char *new_buffer = (char *) db_realloc(node->buffer, length + offset + 1);
     if (!new_buffer) {
-      return 1;
+      return ERR_MEM_REALLOC;
     }
 
     node->buffer = new_buffer;
@@ -94,7 +94,7 @@ int cstr_set_range(CString *node, const char *str, int offset) {
   strcpy(node->buffer + offset, str);
   node->used = length + offset;
 
-  return 0;
+  return RESULT_OK;
 }
 
 void cstr_free(CString *node) {
@@ -124,7 +124,7 @@ int cstr_append(CString *node, const char *str) {
   if (node->used + length > node->size) {
     char *new_buffer = (char *) db_realloc(node->buffer, node->used + length + 1);
     if (!new_buffer) {
-      return -1;
+      return ERR_MEM_REALLOC;
     }
 
     node->buffer = new_buffer;

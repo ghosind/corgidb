@@ -7,6 +7,13 @@
 #ifndef _TRANSACTION_H_
 #define _TRANSACTION_H_
 
+enum TransactionStatus {
+  TS_NONE,
+  TS_BEGAN,
+  TS_COMMITTING,
+  TS_ROLLBACKING,
+};
+
 typedef struct Change {
   char *value;
   void *node;
@@ -15,7 +22,7 @@ typedef struct Change {
 } Change;
 
 typedef struct DictTransaction {
-  int began;
+  enum TransactionStatus status;
   Change *changes;
 } DictTransaction;
 

@@ -299,7 +299,7 @@ CorgiDBResult *db_exists(const CorgiDB *db, const char **keys, const int len) {
   int num = 0;
 
   for (int i = 0; i < len; i++) {
-    num += dict_find(db->dict, keys[i]) ? 1 : 0;
+    num += dict_find(db->dict, keys[i]) == RESULT_KEY_EXIST ? 1 : 0;
   }
 
   result->code = RESULT_OK;

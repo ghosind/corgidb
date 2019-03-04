@@ -11,6 +11,7 @@ enum CorgiDBStatusCode {
   // 0x0*** system operational codes
   // 0x00** success codes
   RESULT_OK = 0x0000,
+  RESULT_KEY_EXIST = 0x0001,
 
   // 0x01** user errors
   ERR_USR_TTL = 0x0101,
@@ -20,6 +21,7 @@ enum CorgiDBStatusCode {
   ERR_NO_KEY = 0x0201,
   ERR_NO_TTL = 0x0202,
   ERR_KEY_EXIST = 0x0203,
+  ERR_KEY_NOT_EXIST = 0x0204,
 
   // 0x1*** system warning codes
 
@@ -36,6 +38,10 @@ enum CorgiDBStatusCode {
 
   // 0x23** hash error
   ERR_UNKNOWN_HASH = 0x2301,
+
+  // 0x24** cstring error
+  ERR_CSTR_NO_NODE = 0x2401,
+  ERR_CSTR_OFFSET_OVER = 0x2402,
 };
 
 typedef struct CorgiDBResult {

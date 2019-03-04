@@ -9,6 +9,7 @@
 #include <cstring.h>
 #include <dict.h>
 #include <memory.h>
+#include <result.h>
 #include <transaction.h>
 
 int trans_begin(void *dict_p) {
@@ -17,14 +18,14 @@ int trans_begin(void *dict_p) {
   if (!dict->transaction) {
     dict->transaction = (DictTransaction *) db_malloc(sizeof(DictTransaction));
     if (!dict->transaction) {
-      return 1;
+      return ERR_MEM_ALLOC;
     }
 
     dict->transaction->changes = NULL;
   }
 
-  dict->transaction->began = 1;
-  return 0;
+  dict->transaction->status = TS_BEGAN;
+  return RESULT_OK;
 }
 
 int trans_commit(void *dict_p) {
@@ -32,6 +33,7 @@ int trans_commit(void *dict_p) {
   Change *change, *next;
   
   change = dict->transaction->changes;
+  dict->transaction->status = TS_COMMITTING;
 
   while (change) {
     next = change->next;
@@ -40,16 +42,17 @@ int trans_commit(void *dict_p) {
     change = next;
   }
 
-  dict->transaction->began = 0;
+  dict->transaction->status = TS_NONE;
   dict->transaction->changes = NULL;
 
-  return 0;
+  return RESULT_OK;
 }
 
 int trans_rollback(void *dict_p) {
   Dict *dict = (Dict *) dict_p;
   Change *change, *next;
   
+  dict->transaction->status = TS_ROLLBACKING;
   change = dict->transaction->changes;
 
   while (change) {
@@ -68,10 +71,10 @@ int trans_rollback(void *dict_p) {
     change = next;
   }
 
-  dict->transaction->began = 0;
+  dict->transaction->status = TS_NONE;
   dict->transaction->changes = NULL;
 
-  return 0;
+  return RESULT_OK;
 }
 
 int trans_add_change(void *dict_p, void *node_p, short is_new) {
@@ -88,7 +91,7 @@ int trans_add_change(void *dict_p, void *node_p, short is_new) {
     char *value = (char *) db_memcpy(str, strlen(str));
     if (!value) {
       free(change);
-      return 1;
+      return ERR_MEM_ALLOC;
     }
 
     change->value = value;
@@ -101,5 +104,5 @@ int trans_add_change(void *dict_p, void *node_p, short is_new) {
   change->next = dict->transaction->changes;
   dict->transaction->changes = change;
 
-  return 0;
+  return RESULT_OK;
 }

@@ -36,14 +36,14 @@ int db_result_add(CorgiDBResult *result, const char *str) {
   char *buffer = (char *) db_malloc(sizeof(char) * (length + 1));
 
   if (!buffer) {
-    return 1;
+    return ERR_MEM_ALLOC;
   }
 
   strcpy(buffer, str);
   result->buf[result->len] = buffer;
   result->len++;
 
-  return 0;
+  return RESULT_OK;
 }
 
 int db_result_add_range(CorgiDBResult *result, const char *str, 
@@ -51,7 +51,7 @@ int db_result_add_range(CorgiDBResult *result, const char *str,
   char *buffer = (char *) db_malloc(sizeof(char) * (length + 1));
 
   if (!buffer) {
-    return 1;
+    return ERR_MEM_ALLOC;
   }
 
   int i = 0;
@@ -62,5 +62,5 @@ int db_result_add_range(CorgiDBResult *result, const char *str,
   result->buf[result->len] = buffer;
   result->len++;
 
-  return 0;
+  return RESULT_OK;
 }
