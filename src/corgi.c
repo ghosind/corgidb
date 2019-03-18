@@ -128,7 +128,11 @@ CorgiDBResult *db_getset(const CorgiDB *db, const char *key,
     const char *value) {
   CorgiDBResult *result = db_get(db, key);
   
-  result->code |= dict_set(db, key, value, SetFlag_NONE, 0);
+  if (!result || result->code != RESULT_OK) {
+    return result;
+  }
+
+  result->code = dict_set(db->dict, key, value, SetFlag_NONE, 0);
   
   return result;
 }
@@ -299,7 +303,7 @@ CorgiDBResult *db_exists(const CorgiDB *db, const char **keys, const int len) {
   int num = 0;
 
   for (int i = 0; i < len; i++) {
-    num += dict_find(db->dict, keys[i]) == RESULT_KEY_EXIST ? 1 : 0;
+    num += dict_find(db->dict, keys[i]) == NULL ? 0 : 1;
   }
 
   result->code = RESULT_OK;
