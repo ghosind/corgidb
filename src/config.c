@@ -17,7 +17,7 @@ CorgiDBConfig *db_get_config() {
 
   config->init_size = 1000000;
   config->growth_type = Growth_Increment;
-  config->hash_type = Accumulation;
+  config->hash_type = Murmur3_32;
 
   return config;
 }

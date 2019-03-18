@@ -39,8 +39,8 @@ Dict *dict_init(CorgiDBConfig *config) {
   dict_reset(dict);
 
   switch (config->hash_type) {
-    case Accumulation:
-      dict->hash_function = accumulation;
+    case Murmur3_32:
+      dict->hash_function = murmur3_32;
       break;
     default:
       db_error(ERR_UNKNOWN_HASH, "Unknow hash type.");

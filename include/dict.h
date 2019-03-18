@@ -28,7 +28,7 @@ typedef struct Dict {
   int used;
   DictNode **table;
   DictTransaction *transaction;
-  int (*hash_function)(const char *key);
+  unsigned int (*hash_function)(const char *key);
 } Dict;
 
 enum DBSetFlag {

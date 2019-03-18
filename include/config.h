@@ -13,7 +13,7 @@ enum GrowthType {
 };
 
 enum HashType {
-  Accumulation,
+  Murmur3_32,
 };
 
 typedef struct CorgiDBConfig {
