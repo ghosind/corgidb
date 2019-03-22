@@ -21,7 +21,6 @@ CString *cstr_create(const char *str) {
     return NULL;
   }
 
-  // allocate length * 2 memory for buffer
   int length = strlen(str);
   // last byte for '\0'
   char *buffer = (char *) db_malloc(sizeof(char) * (length + 1));
@@ -59,7 +58,7 @@ int cstr_set(CString *node, const char *str) {
   int length = strlen(str);
 
   if (length > node->size) {
-    char *new_buffer = (char *) db_realloc(node->buffer, length + 1);
+    char *new_buffer = (char *) db_realloc(node->buffer, length * 2 + 1);
     if (!new_buffer) {
       return ERR_MEM_REALLOC;
     }
@@ -82,7 +81,7 @@ int cstr_set_range(CString *node, const char *str, int offset) {
   int length = strlen(str);
 
   if (length + offset > node->size) {
-    char *new_buffer = (char *) db_realloc(node->buffer, length + offset + 1);
+    char *new_buffer = (char *) db_realloc(node->buffer, (length + offset) * 2 + 1);
     if (!new_buffer) {
       return ERR_MEM_REALLOC;
     }
@@ -122,7 +121,7 @@ int cstr_append(CString *node, const char *str) {
   int length = strlen(str);
 
   if (node->used + length > node->size) {
-    char *new_buffer = (char *) db_realloc(node->buffer, node->used + length + 1);
+    char *new_buffer = (char *) db_realloc(node->buffer, (node->used + length) * 2 + 1);
     if (!new_buffer) {
       return ERR_MEM_REALLOC;
     }
