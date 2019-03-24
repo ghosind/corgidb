@@ -7,7 +7,7 @@
 #ifndef _RESULT_H_
 #define _RESULT_H_
 
-enum CorgiDBStatusCode {
+typedef enum CorgiDBStatusCode {
   // 0x0*** system operational codes
   // 0x00** success codes
   RESULT_OK = 0x0000,
@@ -23,6 +23,9 @@ enum CorgiDBStatusCode {
   ERR_KEY_EXIST = 0x0203,
   ERR_KEY_NOT_EXIST = 0x0204,
 
+  // 0x03** db errors
+  ERR_DB_FULL = 0x0301,
+
   // 0x1*** system warning codes
 
   // 0x2*** system error codes
@@ -34,7 +37,8 @@ enum CorgiDBStatusCode {
   ERR_MEM_REALLOC = 0x2102,
 
   // 0x22** dictionary error
-  ERR_DICT_SIZE = 0x2202,
+  ERR_DICT_SIZE = 0x2201,
+  ERR_UNKNOWN_RESIZE = 0x2202,
 
   // 0x23** hash error
   ERR_UNKNOWN_HASH = 0x2301,
@@ -42,10 +46,10 @@ enum CorgiDBStatusCode {
   // 0x24** cstring error
   ERR_CSTR_NO_NODE = 0x2401,
   ERR_CSTR_OFFSET_OVER = 0x2402,
-};
+} CorgiDBStatusCode;
 
 typedef struct CorgiDBResult {
-  enum CorgiDBStatusCode code;
+  CorgiDBStatusCode code;
   int len;
   char **buf;
 } CorgiDBResult;

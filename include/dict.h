@@ -8,6 +8,7 @@
 
 #include <config.h>
 #include <cstring.h>
+#include <result.h>
 #include <transaction.h>
 
 #ifndef _DICT_H_
@@ -41,6 +42,7 @@ Dict *dict_init(CorgiDBConfig *config);
 void dict_reset(Dict *dict);
 
 int dict_resize(Dict *dict, const int size);
+CorgiDBStatusCode dict_resize_by_config(Dict *dict, CorgiDBConfig *config);
 DictNode *dict_find(Dict *dict, const char *key);
 
 char *dict_get(Dict *dict, const char *key);

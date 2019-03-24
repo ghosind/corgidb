@@ -18,6 +18,7 @@ enum HashType {
 
 typedef struct CorgiDBConfig {
   unsigned int init_size;
+  unsigned int max_size;
   enum GrowthType growth_type;
   enum HashType hash_type;
 } CorgiDBConfig;

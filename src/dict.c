@@ -51,6 +51,39 @@ Dict *dict_init(CorgiDBConfig *config) {
   return dict;
 }
 
+CorgiDBStatusCode dict_resize_by_config(Dict *dict, CorgiDBConfig *config) {
+  if (!dict) {
+    db_error(ERR_SYS_PARAMS, "Cannot resize empty dictionary.");
+    return ERR_SYS_PARAMS;
+  }
+
+  if (!config) {
+    db_error(ERR_SYS_PARAMS, "Config was empty.");
+    return ERR_SYS_PARAMS;
+  }
+
+  if (dict->size == 0) {
+    return dict_resize(dict, config->init_size);
+  }
+
+  enum CorgiDBStatusCode code = RESULT_OK;
+
+  switch (config->growth_type)
+  {
+    case Growth_Increment:
+      code = dict_resize(dict, dict->size + config->init_size);
+      break;
+    case Growth_Multiplation:
+      code = dict_resize(dict, dict->size * 2);
+      break;
+    default:
+      code = ERR_UNKNOWN_RESIZE;
+      break;
+  }
+
+  return code;
+}
+
 int dict_resize(Dict *dict, const int size) {
   if (!dict) {
     db_error(ERR_SYS_PARAMS, "Cannot resize empty dictionary.");
