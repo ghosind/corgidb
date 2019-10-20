@@ -62,7 +62,38 @@ CorgiDBResult *db_set(const CorgiDB *db, const char *key, const char *value,
     return NULL;
   }
 
-  result->code = dict_set(db->dict, key, value, flag, ttl);
+  DictNode *node = dict_find(db->dict, key);
+  if (!node) {
+    if (flag == SetFlag_XX) {
+      result->code = ERR_KEY_EXIST;
+    } else {
+      if (db->dict->size == db->config->max_size) {
+        result->code = ERR_DB_FULL;
+      } else {
+        switch (db->config->growth_type)
+        {
+          case Growth_Increment:
+            dict_resize(db->dict, db->dict->size == 0 
+                ? db->config->init_size
+                : db->dict->size + db->config->init_size);
+            break;
+          case Growth_Multiplation:
+            dict_resize(db->dict, db->dict->size == 0
+                ? db->config->init_size
+                : db->dict->size * 2);
+            break;
+          default:
+            result->code = ERR_UNKNOWN_RESIZE;
+            return result;
+        }
+        result->code = dict_set(db->dict, key, value, flag, ttl);
+      }
+    }
+  } else if (flag == SetFlag_NX) {
+    result->code = ERR_KEY_EXIST;
+  } else {
+    cstr_set(node->value, value);
+  }
 
   return result;
 }
