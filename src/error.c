@@ -19,6 +19,8 @@ void db_error(const enum CorgiDBStatusCode error_code,
 
   errno = (int) error_code;
   vfprintf(stderr, message, args);
+
+  va_end(args);
 }
 
 void db_fatal(const enum CorgiDBStatusCode error_code, 
@@ -29,4 +31,6 @@ void db_fatal(const enum CorgiDBStatusCode error_code,
 
   vfprintf(stderr, message, args);
   exit(error_code);
+
+  va_end(args);
 }
