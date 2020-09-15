@@ -2,7 +2,7 @@
  * memory.c - Corgi DB
  *
  * Memory tools.
- * 
+ *
  * Copyright (C) 2019, Chen Su <ghosind@gmail.com>. All right reserved.
  */
 
@@ -19,6 +19,8 @@ void *db_malloc(size_t size) {
     db_error(ERR_MEM_ALLOC, "Failed to allocate memory,");
     return NULL;
   }
+
+  memset(memory, 0, size);
 
   return memory;
 }
