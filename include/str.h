@@ -18,6 +18,12 @@ typedef struct DBStringHead {
   size_t capacity;
 } DBStringHead;
 
+static inline size_t str_len(DBString str) {
+  DBStringHead *head = str_get_head(str);
+
+  return head->length;
+}
+
 /**
  * Creates and returns a new empty string with default capacity.
  */
@@ -31,6 +37,6 @@ DBString str_create_from_seq(const char *seq);
 
 char *str_duplicate(DBString str);
 
-size_t str_len(DBString str);
+void str_free(DBString str);
 
 #endif // _CDB_STR_H_

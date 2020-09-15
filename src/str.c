@@ -1,12 +1,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <memory.h>
 #include <str.h>
+#include <utils.h>
 
 DBString str_create() {
-  size_t size = sizeof(DBStringHead) + STR_INIT_CAPACITY + 1;
+  size_t size = sizeof(DBStringHead) + STR_INIT_CAPACITY;
 
-  DBStringHead *head = (DBStringHead *) malloc(size);
+  DBStringHead *head = (DBStringHead *) db_malloc(size);
   if (!head) {
     return NULL;
   }
@@ -21,9 +23,9 @@ DBString str_create() {
 DBString str_create_from_seq(const char *seq) {
   size_t length = strnlen(seq, STR_MAX_CAPACITY);
   size_t capacity = length + 1;
-  
-  if ((length + 1) % 8 != 0) {
-    capacity = length & ((!0) << 3) + 8;
+
+  if (capacity % 8 != 0) {
+    capacity = get_aligned_size(capacity);
   }
 
   DBStringHead *head = (DBStringHead *) malloc(
@@ -51,11 +53,11 @@ char *str_duplicate(DBString str) {
   return dest;
 }
 
-size_t str_len(DBString str) {
+void str_free(DBString str) {
   DBStringHead *head = str_get_head(str);
   if (!head) {
-    return -1;
+    return;
   }
 
-  return head->length;
+  free(head);
 }
