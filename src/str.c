@@ -61,3 +61,15 @@ void str_free(DBString str) {
 
   free(head);
 }
+
+bool str_is_equal(DBString str, const char *seq, size_t len) {
+  return !str_cmp(str, seq, len);
+}
+
+int str_cmp(DBString str, const char *seq, size_t seqLen) {
+  size_t strLen = str_len(str);
+
+  size_t max = strLen > seqLen ? strLen : seqLen;
+
+  return memcmp(str, seq, max);
+}

@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include <type.h>
+
 #ifndef _CDB_STR_H_
 #define _CDB_STR_H_
 
@@ -38,5 +40,9 @@ DBString str_create_from_seq(const char *seq);
 char *str_duplicate(DBString str);
 
 void str_free(DBString str);
+
+bool str_is_equal(DBString str, const char *seq, size_t len);
+
+int str_cmp(DBString str, const char *seq, size_t len);
 
 #endif // _CDB_STR_H_
